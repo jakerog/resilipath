@@ -1,4 +1,4 @@
-# ADR-007: Feature Flag System Implementation (NEW - F1:A)
+# ADR-007: Feature Flag System Implementation (v3.0 - Single-Module MVP)
 
 **Status:** Accepted  
 **Date:** 2026-03-30  
@@ -10,41 +10,32 @@
 
 ## Context
 
-From clarification answer F1:A:
-> "Yes: Basic flag system (e.g., `features: { bcp_module: false }`) to toggle module visibility per tenant"
-
-The platform requires a simple feature flag system in Phase 0 to enable "build foundation, hide UI" for future modules while maintaining a single-module MVP scope.
-
-### Requirements
+The platform requires a simple feature flag system to enable "build foundation, hide UI" for future modules while maintaining a single-module MVP scope. Support for:
 - Toggle module visibility per tenant (e.g., `bcp_module: false` for MVP)
 - Toggle sub-feature visibility (e.g., `evidence_webhook: false` for MVP)
 - Audit trail of feature flag changes
-- Simple implementation (no complex flag management library for MVP)
+- **Free-Tier Priority**: Optimize for configuration management.
+
+Previous model used a PostgreSQL JSONB column. Shifting to **Firebase Remote Config or Firestore-based Configuration**.
 
 ---
 
 ## Decision
 
-Implement **Basic JSONB Feature Flag System** with the following architecture:
+Implement **Firebase Remote Config with Tenant-Specific Parameter Overrides** and **Firestore-based Configuration fallback**:
 
-### Database Schema
+### Architecture (MVP Scope)
+- **Primary Flag Storage**: Firebase Remote Config for global flags (e.g., `bcp_module_enabled: false` globally).
+- **Tenant-Specific Overrides**: Firestore `tenants` collection containing a `features` field for tenant-level overrides (e.g., `enterprise_tenant_1: { bcp_module: true }`).
+- **Access Control**: Feature flags are included in the Firebase Auth custom claims (for server-side access control) and fetched client-side via the Remote Config SDK.
+- **Audit Logging**: All changes to feature flags (Remote Config and Firestore) are logged to the `audit_log` collection with user attribution.
 
-```sql
--- Tenant configuration table with feature flags
-CREATE TABLE tenant_config (
-    tenant_id TEXT PRIMARY KEY,
-    features JSONB DEFAULT '{
-      "bcp_module": false,
-      "evidence_webhook": false,
-      "crisis_comms": false,
-      "offline_mode": false,
-      "excel_export": false,
-      "ppt_export": false
-    }',
-    tier TEXT CHECK (tier IN ('standard', 'enterprise', 'elite')) DEFAULT 'standard',
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_by UUID REFERENCES resource(id)
-);
+### Benefits
+- **Real-time Configuration**: Remote Config allows toggling flags without redeploying code.
+- **Cost**: Firebase Remote Config and Firestore have generous free tiers.
+- **Developer Experience**: Native SDKs for client and server.
 
--- Audit log for feature flag changes (extends existing audit_log table)
-ALTER TABLE audit_log ADD COLUMN feature_flag_context JSONB;
+### Verification
+- [ ] Feature flag toggles hide/show placeholder table access in the UI and API.
+- [ ] Audit log includes `module_name`, `feature_flag`, and `tenant_id` for all changes.
+- [ ] Remote Config update propagation latency verification.

@@ -13,20 +13,30 @@
 The platform requires strict tenant isolation for SOC 2 Type II and ISO 27001 compliance while enabling:
 - Shared reference data (ISO standards, threat catalogs, regulatory templates)
 - Cross-tenant reporting for enterprise subsidiaries (Parent → Child aggregation)
-- Tenant-specific encryption keys (Phase 2 BYOK module)
-- Data residency requirements (single region at launch + Data Privacy Vault pattern)
-- **Minimal Viable Foundation**: Placeholder tables for future modules (BCP Plans, Crisis Communications) hidden via feature flags
+- Data residency requirements (single region at launch)
+- **Minimal Viable Foundation**: Placeholder collections for future modules (BCP Plans, Crisis Communications) hidden via feature flags
+- **Free-Tier Priority**: Optimize for low operational costs at scale.
 
-From clarification questions:
-- **Q9 Isolation Model:** Schema-per-tenant
-- **Q10 Reference Data:** Tenants share via "public" schema
-- **Q11 Cross-Tenant Reporting:** Parent entities can view aggregated metrics across Child tenants
-- **Q12 Retention Policies:** Configurable per tenant
-- **Q13 Data Export:** JSON, Excel/CSV, PDF on demand
-- **Q14 Encryption:** Phase 1: Provider-managed keys + RLS; Phase 2: BYOK module
+Previous model was Schema-per-tenant in PostgreSQL. Shifting to GCP/Firebase.
 
 ---
 
 ## Decision
 
-Adopt **Schema-per-Tenant + Shared Reference Schema** isolation model with **Placeholder Tables for Future Modules**:
+Adopt **Firestore with Document-Level Isolation and Security Rules** model:
+
+### Isolation Architecture
+- **Firestore Collections**: Standard collections (e.g., `exercises`, `tasks`, `resources`) will include a mandatory `tenantId` field.
+- **Security Rules**: Firebase Security Rules will enforce that users can only read/write documents where the `tenantId` matches their own `tenantId` (stored in custom claims in Firebase Auth).
+- **Public Data**: A `shared_reference` collection for ISO standards and templates, readable by all authenticated users.
+- **Tenant Config**: A `tenants` collection containing tenant-specific settings, branding, and feature flags.
+
+### Benefits
+- **Scalability**: Firebase scales automatically without managing server instances.
+- **Cost**: Generous free tier for Firestore and Firebase Auth.
+- **Security**: Centralized rule management for data access.
+
+### Verification
+- [ ] Firestore Security Rules unit tests (using Firebase Emulator Suite).
+- [ ] Penetration testing confirms no cross-tenant data access via API or Client SDK.
+- [ ] Audit log sampling shows zero cross-tenant access attempts.

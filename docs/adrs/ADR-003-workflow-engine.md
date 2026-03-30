@@ -1,11 +1,3 @@
-
-**💾 Save Instructions:** Copy content above → Create file `docs/adrs/ADR-002-auth-provider.md` → Save
-
----
-
-## 📄 FILE 7: `docs/adrs/ADR-003-workflow-engine.md` (v3.0 - Single-Module MVP)
-
-```markdown
 # ADR-003: Workflow Engine Technology (v3.0 - Single-Module MVP)
 
 **Status:** Accepted  
@@ -18,23 +10,35 @@
 
 ## Context
 
-From clarification questions:
-- **Q16 Task Dependencies:** Complex DAG (many-to-many relationship table) with circular dependency prevention
-- **Q18 Execution Model:** Manual human-driven only (MVP); Outbound webhooks prepared for Phase 2 automation
-- **Q22 Parallel Task Tracking:** Real-time Gantt visualization with WebSocket sync
-- **Q23 Task Re-assignment:** Mid-exercise re-assignment with conflict resolution
-- **Q9:B Go/No-Go Workflow:** Simple toggle: User marks "Go" or "No-Go" with optional note (no signature)
-
-From DR Runbook Excel analysis:
-- 90 tasks with complex predecessor relationships (e.g., Task 17 depends on Tasks 1-16)
+The platform requires a robust task orchestration engine for DR exercises with support for:
+- Complex DAG (many-to-many relationship table)
 - Sequential and Parallel workflows within stages
-- Go/No-Go decision points (Tasks 17, 67, 82)
-- Rollback stages only activated on failure
+- Circular dependency prevention
+- Go/No-Go decision points
+- Real-time Gantt visualization with sub-100ms latency
+- **Free-Tier Priority**: Optimize for serverless execution.
+
+Previous model used PostgreSQL many-to-many relationships. Shifting to **Firestore + Cloud Functions**.
 
 ---
 
 ## Decision
 
-Build **Custom DAG Engine** with the following characteristics for **Single-Module MVP**:
+Build **Custom DAG Engine using Firestore + Cloud Functions** with the following characteristics for **Single-Module MVP**:
 
 ### Architecture (MVP Scope)
+- **Data Store**: Firestore `tasks` collection with `predecessorIds` array (DAG representation).
+- **Execution Logic**: Cloud Functions (Node.js) triggered by Firestore updates (`onUpdate` on `tasks` collection).
+- **Circular Dependency Prevention**: Validation logic on task save (recursive check within Cloud Function) to prevent circularity.
+- **Real-time Sync**: Firestore SDK native real-time listeners for the Gantt visualization (eliminating the need for custom WebSocket management).
+- **Go/No-Go Workflow**: A simple `isDecisionPoint` field and `decisionValue` (Go/No-Go) toggle, enforced by Security Rules and Cloud Functions.
+
+### Benefits
+- **Sub-100ms Latency**: Native Firestore sync is optimized for low-latency updates.
+- **Serverless Scaling**: Cloud Functions automatically scale with exercise load.
+- **Cost**: Generous free tier for Cloud Functions and Firestore.
+
+### Verification
+- [ ] Circular dependency validation tests with mock DAGs.
+- [ ] Real-time Gantt update latency verification under simulated load.
+- [ ] Go/No-Go decision point workflow tested with audit log capture.
