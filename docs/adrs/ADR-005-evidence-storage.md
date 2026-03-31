@@ -3,14 +3,14 @@
 **Status:** Accepted  
 **Date:** 2026-03-31
 **Deciders:** Primary Agent, Security Agent, DevOps Agent  
-**Technical Context:** DR Exercise Evidence Collection - Single-Module MVP  
+**Technical Context:** Resilience Exercise Evidence Collection - Single-Module MVP
 **Compliance Impact:** SOC 2 CC7.2, ISO 27001 A.12.2.1
 
 ---
 
 ## Context
 
-The platform requires a secure, SOC 2 / ISO 27001 compliant evidence storage solution for DR exercises with support for:
+The platform requires a secure, SOC 2 / ISO 27001 compliant evidence storage solution for Resilience exercises with support for:
 - Evidence collection: Photo (25MB max) and Text only (MVP scope)
 - Metadata Envelope: {who, when_utc, where_plan_id, sha256_hash}
 - Evidence immutability post-completion

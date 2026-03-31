@@ -3,14 +3,14 @@
 **Status:** Accepted  
 **Date:** 2026-03-31
 **Deciders:** Primary Agent, Data Agent  
-**Technical Context:** DR Exercise Task Orchestration - Single-Module MVP  
+**Technical Context:** Resilience Exercise Task Orchestration - Single-Module MVP
 **Compliance Impact:** SOC 2 CC7.1 (Change Management)
 
 ---
 
 ## Context
 
-The platform requires a robust task orchestration engine for DR exercises with support for:
+The platform requires a robust task orchestration engine for Resilience exercises with support for:
 - Complex DAG (many-to-many relationship table)
 - Sequential and Parallel workflows within stages
 - Circular dependency prevention

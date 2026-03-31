@@ -29,7 +29,7 @@ This ADR was originally planned for MVP but has been **deferred to Phase 2** bas
 
 ### Phase 2 Scope (What WILL Be Added)
 - Service Workers for offline asset caching
-- IndexedDB for multi-tenant local storage
+- IndexedDB for isolated local storage
 - Background sync for execution actions
 - Conflict resolution for offline updates
 - Auto-wipe policy for local security (30 days)

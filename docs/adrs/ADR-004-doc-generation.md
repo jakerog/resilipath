@@ -13,13 +13,13 @@
 This ADR was originally planned for MVP but has been **deferred to Phase 2** based on the single-module MVP scope decision for ResiliPath.
 
 ### Original Context (For Reference)
-- BCP Templates: Platform-managed base templates + multi-tenant overrides (Inheritance model)
+- BCP Templates: Platform-managed base templates + isolated overrides (Inheritance model)
 - Version Control: Linear versioning + immutable snapshots
 - Multi-format Export: PDF (immutable), Word .docx, HTML
 
 ## Decision
 
-**DEFERRED TO PHASE 2** - This functionality is not included in the ResiliPath Single-Module MVP (Disaster Recovery Exercise Execution Engine only).
+**DEFERRED TO PHASE 2** - This functionality is not included in the ResiliPath Single-Module MVP (Resilience Exercise Execution Engine only).
 
 ### MVP Scope (What IS Included)
 - PDF report generation for exercise execution (Sub-Phase 1.9)
@@ -35,4 +35,4 @@ This ADR was originally planned for MVP but has been **deferred to Phase 2** bas
 
 ## Future Implementation Plan (Phase 2)
 
-When this ADR is activated in Phase 2, it will utilize serverless Cloud Functions and template engines compatible with the multi-tenant Firestore model.
+When this ADR is activated in Phase 2, it will utilize serverless Cloud Functions and template engines compatible with the isolated Firestore model.

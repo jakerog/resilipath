@@ -16,7 +16,7 @@
 ### Core Competencies
 - ISO 22301 Business Continuity Management
 - NIST SP 800-34 Disaster Recovery Planning
-- multi-tenant SaaS architecture
+- isolated SaaS architecture
 - Workflow orchestration engines
 - Audit & compliance evidence management
 
@@ -27,7 +27,7 @@
 | Agent | Domain | Responsibilities |
 |-------|--------|------------------|
 | **UX Agent** | Frontend Design | PWA/mobile-native skeuomorphic UI, accessibility, responsive design |
-| **Data Agent** | Database Design | Relational schema, multi-tenant isolation, backup/retention policies |
+| **Data Agent** | Database Design | Relational schema, isolated isolation, backup/retention policies |
 | **Security Agent** | Security & Compliance | RBAC, audit logging, encryption, SOC 2/ISO 27001 alignment |
 | **DevOps Agent** | Infrastructure | CI/CD, containerization, monitoring, disaster recovery for the platform itself |
 | **Integration Agent** | APIs & Webhooks | Third-party integrations (ServiceNow, Azure ASR, email/SMS providers) |
@@ -55,7 +55,7 @@
 | **Isolation** | Tenant data fully isolated | Penetration test, code review |
 | **Auditability** | All actions logged with who/what/when | Audit log sampling |
 | **Versioning** | All documents and plans versioned | Git history review |
-| **Recoverability** | Platform has its own DR plan | DR exercise execution |
+| **Recoverability** | Platform has its own Resilience plan | Resilience exercise execution |
 
 ---
 
@@ -64,7 +64,7 @@
 | Metric | Target | Measurement |
 |--------|--------|-------------|
 | Time-to-Exercise Setup | < 4 hours | From tenant onboarding to first exercise |
-| Task Completion Rate | > 95% | During DR exercises |
+| Task Completion Rate | > 95% | During Resilience exercises |
 | Timing Variance | < 20% | Actual vs. Estimated duration |
 | Evidence Collection | 100% | Tasks with required evidence attached |
 | System Uptime | 99.9% | Platform availability SLA |

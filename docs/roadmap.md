@@ -4,7 +4,7 @@
 **Version:** 4.0 (Modular GCP/Firebase MVP)
 **Generated:** 2026-03-31
 **Last Updated:** 2026-03-31
-**MVP Scope:** Disaster Recovery Exercise Execution Engine ONLY  
+**MVP Scope:** Resilience Exercise Execution Engine ONLY
 **MVP Launch Target:** 04/01/2026
 
 ---
@@ -18,7 +18,7 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 | Milestone | Date | Deliverable |
 |-----------|------|-------------|
 | Phase 0 Complete | 2026-03-28 | Foundation architecture ready (GCP, Firebase Auth, CI/CD, Firestore schema) |
-| Phase 1 MVP Launch | 2026-04-01 | DR Exercise Execution Engine (Modular GCP/Firebase architecture, Vercel frontend) |
+| Phase 1 MVP Launch | 2026-04-01 | Resilience Exercise Execution Engine (Modular GCP/Firebase architecture, Vercel frontend) |
 | Phase 2 Alpha | 2026-05-27 | BCP Plan Generation + Multi-format exports + Offline mode (PWA Service Workers) |
 | Phase 3 Hardening | 2026-07-22 | Crisis Communications (Multi-channel) + Performance optimization + SSO/SAML |
 | Phase 4 Scale | 2026-10-01 | Vendor Risk + Compliance Mapper + ML analytics + Partner API |
@@ -30,7 +30,7 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 | Phase | Timeline | Duration | Focus | Key Deliverables | Success Metrics |
 |-------|----------|----------|-------|------------------|-----------------|
 | **Phase 0** | Weeks 1-4 | 4 weeks | Foundation | **Firebase Project Provisioning**, Auth Custom Claims, CI/CD for Vercel/Firebase, Firestore Base Schema | Tenant isolation verified (Security Rules), Auth functional, CI/CD operational |
-| **Phase 1** | Weeks 5-8 | 4 weeks | Module 1 MVP | **Modular DR Exercise Engine**, PDF reports (Cloud Functions), Firebase Storage evidence, SMS check-in | Time-to-Exercise <4hrs, Task Completion >95%, Sync Latency <100ms |
+| **Phase 1** | Weeks 5-8 | 4 weeks | Module 1 MVP | **Modular Resilience Exercise Engine**, PDF reports (Cloud Functions), Firebase Storage evidence, SMS check-in | Time-to-Exercise <4hrs, Task Completion >95%, Sync Latency <100ms |
 | **Phase 2** | Weeks 9-16 | 8 weeks | Module 2 Alpha | BCP plan generation, Excel/Word exports, Offline mode (IndexedDB + Service Workers) | BCP Gen <2hrs, Template Accuracy >95%, Offline Sync Success >99% |
 | **Phase 3** | Weeks 17-24 | 8 weeks | Hardening | Crisis communications, performance optimization, advanced third-party integrations | Notification Delivery >99%, Page Load <2s (p95), API <300ms |
 | **Phase 4** | Weeks 25-36 | 12 weeks | Scale | Vendor risk, compliance mapper, ML analytics, partner API, internationalization | 100+ Tenants, $1M+ ARR, NPS >50 |
@@ -48,7 +48,7 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 
 ---
 
-## Phase 1: Module 1 MVP - DR Exercise Execution Engine (Weeks 5-8)
+## Phase 1: Module 1 MVP - Resilience Exercise Execution Engine (Weeks 5-8)
 
 ### Objectives
 - [x] **Sub-Phase 1.1: Environment & Tooling** (Vercel + Firebase Setup)

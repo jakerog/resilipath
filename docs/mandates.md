@@ -4,7 +4,7 @@
 **Version:** 4.0 (Modular GCP/Firebase MVP)
 **Generated:** 2026-03-31
 **Last Updated:** 2026-03-31
-**MVP Scope:** Disaster Recovery Exercise Execution Engine ONLY  
+**MVP Scope:** Resilience Exercise Execution Engine ONLY
 **Status:** LOCKED - Refactored for GCP/Firebase/Vercel
 
 ---
@@ -34,7 +34,7 @@
 ## M2: Evidence-First Design (MVP: Photo + Text Only) [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** DR exercises require audit-ready evidence for SOC 2 Type II and ISO 27001 compliance.
+**Rationale:** Resilience Exercises require audit-ready evidence for SOC 2 Type II and ISO 27001 compliance.
 
 ### Requirements (MVP Scope)
 - [x] Every task can have evidence attached: **Photo (25MB max, JPG/PNG/WebP) or Text only**
@@ -80,7 +80,7 @@
 ## M4: PWA/Mobile-Native UX (Online-Only for MVP) [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** DR exercises may occur in low-connectivity environments; mobile-first design is non-negotiable.
+**Rationale:** Resilience Exercises may occur in low-connectivity environments; mobile-first design is non-negotiable.
 
 ### Requirements (MVP Scope)
 - [x] Progressive Web App (PWA) with mobile-native feel (**Next.js on Vercel**)
@@ -120,7 +120,7 @@
 ## M6: Exercise Independence [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** Each DR exercise is independent with own data; exercises must be comparable across time for trend analysis.
+**Rationale:** Each Resilience Exercise is independent with own data; exercises must be comparable across time for trend analysis.
 
 ### Requirements
 - [x] Each exercise has independent Resources, Tasks, Teams within Firestore collections
@@ -139,7 +139,7 @@
 ## M7: Timing & Variance Tracking [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** DR runbooks require precise timing analysis for RTO validation and continuous improvement.
+**Rationale:** Resilience runbooks require precise timing analysis for RTO validation and continuous improvement.
 
 ### Requirements
 - [x] Estimated Duration per task (from runbook import or manual entry)
@@ -158,7 +158,7 @@
 ## M8: Stage Management [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** DR exercises follow specific stage progression; rollback stages only activated on failure.
+**Rationale:** Resilience Exercises follow specific stage progression; rollback stages only activated on failure.
 
 ### Requirements
 - [x] Eight stages supported per event (Failover/Failback)
@@ -177,7 +177,7 @@
 ## M9: Resource Check-In [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** Resource availability is biggest issue in DR exercises; check-in critical for success.
+**Rationale:** Resource availability is biggest issue in Resilience Exercises; check-in critical for success.
 
 ### Requirements
 - [x] Resources can check in ahead of exercise dates via **SMS primary (Firebase Extension/Twilio)**
@@ -195,7 +195,7 @@
 ## M10: Communication Engine [FINAL - LOCKED]
 
 **Priority:** MVP-CRITICAL  
-**Rationale:** DR exercises require coordinated communications.
+**Rationale:** Resilience Exercises require coordinated communications.
 
 ### Requirements (MVP Scope)
 - [x] Email list management with tenant isolation in Firestore

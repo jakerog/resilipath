@@ -4,7 +4,7 @@
 **Version:** 4.0 (Modular GCP/Firebase MVP)
 **Generated:** 2026-03-31
 **Last Updated:** 2026-03-31
-**MVP Scope:** Disaster Recovery Exercise Execution Engine ONLY  
+**MVP Scope:** Resilience Exercise Execution Engine ONLY
 **MVP Launch Target:** 04/01/2026  
 **Status:** Refactored for Modular Design & GCP/Firebase/Vercel Stack
 
@@ -12,7 +12,7 @@
 
 ## Executive Summary
 
-Build a subscription-based, multi-tenant, modular SaaS platform for Business Continuity Management and Disaster Recovery Planning. **MVP focuses exclusively on the Disaster Recovery Exercise Execution Engine**, refactored into a **modular, serverless architecture using GCP, Firebase, and Vercel**. This phase prioritizes free-tier scalability, strict single-concern boundaries, and SOC 2 / ISO 27001 compliance alignment.
+Build a subscription-based, isolated, modular SaaS platform for Business Resilience and Continuity Planning. **MVP focuses exclusively on the Resilience Exercise Execution Engine**, refactored into a **modular, serverless architecture using GCP, Firebase, and Vercel**. This phase prioritizes free-tier scalability, strict single-concern boundaries, and SOC 2 / ISO 27001 compliance alignment.
 
 ### Key Strategic Decisions
 | Decision | Rationale |
@@ -30,7 +30,7 @@ Build a subscription-based, multi-tenant, modular SaaS platform for Business Con
 | Document | Type | Key Insights |
 |----------|------|--------------|
 | `GPI Business Continuity Plan v2.0 2025-12-10.docx` | Sample BCP Plan | ISO 22301-aligned structure; 11 sections; annual review requirement |
-| `Prod Failover - Runbook CFIN DR.xlsx` | DR Exercise Runbook | 90 tasks, 8 stages, 15+ teams; timing tracking; variance analysis; evidence requirements |
+| `Prod Failover - Runbook CFIN DR.xlsx` | Resilience Exercise Runbook | 90 tasks, 8 stages, 15+ teams; timing tracking; variance analysis; evidence requirements |
 | `Disaster Recovery Hub.pdf` | Platform Requirements | 7 core tables; RBAC; PWA/mobile UX; notification engine; reporting dashboard |
 
 ---
@@ -38,16 +38,16 @@ Build a subscription-based, multi-tenant, modular SaaS platform for Business Con
 ## Platform Vision (Modular Focus)
 
 ### Core Value Proposition (MVP)
-- Digitize manual DR exercise runbook processes (currently Excel-based).
+- Digitize manual Resilience Exercise runbook processes (currently Excel-based).
 - Provide real-time exercise execution tracking with sub-100ms synchronization via Firestore.
-- Enable multi-tenant isolation via Firebase Auth Custom Claims and Firestore Security Rules.
+- Enable tenant isolation via Firebase Auth Custom Claims and Firestore Security Rules.
 - Generate audit-ready reports (PDF) via serverless Cloud Functions and Puppeteer.
 
 ---
 
 ## Module Overview (MVP Scope)
 
-### Module 1: DR Exercise Execution Engine (MVP ONLY)
+### Module 1: Resilience Exercise Execution Engine (MVP ONLY)
 **Priority:** MVP-CRITICAL  
 **Timeline:** Phase 1 (Weeks 5-8)
 **Launch Target:** 04/01/2026

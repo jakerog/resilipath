@@ -4,7 +4,7 @@
 **Version:** 4.0 (Modular GCP/Firebase MVP)
 **Generated:** 2026-03-31
 **Last Updated:** 2026-03-31
-**MVP Scope:** Disaster Recovery Exercise Execution Engine ONLY  
+**MVP Scope:** Resilience Exercise Execution Engine ONLY
 **Status:** LOCKED - Refactored for GCP/Firebase/Vercel
 
 ---
@@ -18,7 +18,7 @@
 - [x] Infrastructure Layer: **GCP / Firebase + GitHub Actions**
 
 ### R2: Module Separation (Modular MVP Focus)
-- [x] DR Exercises module in `src/dr-exercises/` (ACTIVE for MVP)
+- [x] Resilience Exercises module in `src/dr-exercises/` (ACTIVE for MVP)
 - [x] BCP Plans module in `src/bcp-plans/` (PLACEHOLDER - hidden via feature flag)
 - [x] Crisis Communications module in `src/crisis-comms/` (PLACEHOLDER - hidden via feature flag)
 - [x] Shared libraries in `src/shared/` (auth, logging, utils, feature-flags)
@@ -89,7 +89,7 @@
 ### R14: Backup & Recovery
 - [x] Automated Firestore backups (Scheduled Exports)
 - [x] Firebase Storage versioning for evidence files
-- [x] Platform DR SLA: RPO < 1 hour, RTO < 4 hours
+- [x] Platform Resilience SLA: RPO < 1 hour, RTO < 4 hours
 
 ---
 
