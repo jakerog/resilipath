@@ -16,7 +16,7 @@ The platform requires a secure, SOC 2 / ISO 27001 compliant authentication provi
 - Custom Claims (for RBAC and tenant isolation)
 - **Free-Tier Priority**: Optimize for low operational costs.
 
-Previous model was Firebase Auth or Firebase Auth with SSO/SAML at launch. Shifting to **Firebase Authentication** and **deferring SSO/SAML beyond the MVP launch** (per Q31 update).
+Previous model was Auth0 or WorkOS with SSO/SAML at launch. Shifting to **Firebase Authentication** and **deferring SSO/SAML beyond the MVP launch** (per Q31 update).
 
 ---
 

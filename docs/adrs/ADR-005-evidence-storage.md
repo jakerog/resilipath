@@ -1,4 +1,4 @@
-# ADR-005: Evidence Storage & Integrity (v3.0 - Single-Module MVP)
+# ADR-005: Evidence Storage & Integrity (v4.0 - Modular GCP/Firebase MVP)
 
 **Status:** Accepted  
 **Date:** 2026-03-30  

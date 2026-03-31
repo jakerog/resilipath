@@ -1,4 +1,4 @@
-# ADR-007: Feature Flag System Implementation (v3.0 - Single-Module MVP)
+# ADR-007: Feature Flag System Implementation (v4.0 - Modular GCP/Firebase MVP)
 
 **Status:** Accepted  
 **Date:** 2026-03-30  

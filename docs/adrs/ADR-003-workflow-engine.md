@@ -1,4 +1,4 @@
-# ADR-003: Workflow Engine Technology (v3.0 - Single-Module MVP)
+# ADR-003: Workflow Engine Technology (v4.0 - Modular GCP/Firebase MVP)
 
 **Status:** Accepted  
 **Date:** 2026-03-30  

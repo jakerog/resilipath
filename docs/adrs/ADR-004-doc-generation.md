@@ -1,11 +1,8 @@
 
-**💾 Save Instructions:** Copy content above → Create file `docs/adrs/ADR-003-workflow-engine.md` → Save
 
----
 
-## 📄 FILE 8: `docs/adrs/ADR-004-doc-generation.md` (MOVED to Phase 2)
 
-```markdown
+
 # ADR-004: Document Generation Approach (MOVED to Phase 2)
 
 **Status:** Deferred to Phase 2  
@@ -14,7 +11,6 @@
 **Technical Context:** BCP Plan Generation (Module 2) - Deferred from MVP  
 **Compliance Impact:** ISO 22301 §9.2, SOC 2 CC3.2
 
----
 
 ## Context
 
@@ -33,7 +29,6 @@ From GPI BCP Plan analysis:
 - Approval workflows with digital signatures
 - Multiple appendices and references
 
----
 
 ## Decision
 
@@ -52,7 +47,6 @@ From GPI BCP Plan analysis:
 - Output formats: PDF, Word .docx, HTML, Printable
 - Annual review workflow
 
----
 
 ## Future Implementation Plan (Phase 2)
 
