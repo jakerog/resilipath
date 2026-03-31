@@ -1,6 +1,6 @@
 # RULES.md - Development & Operational Guardrails (v4.0 - Modular GCP/Firebase MVP)
 
-**Project:** Multi-Tenant BC/DR SaaS Platform  
+**Project:** ResiliPath
 **Version:** 4.0 (Modular GCP/Firebase MVP)
 **Generated:** 2026-03-31
 **Last Updated:** 2026-03-31

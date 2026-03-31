@@ -3,7 +3,7 @@
 **Status:** Accepted  
 **Date:** 2026-03-31
 **Deciders:** Primary Agent, Security Agent  
-**Technical Context:** Multi-Tenant BC/DR SaaS Platform - Single-Module MVP  
+**Technical Context:** ResiliPath - Single-Module MVP
 **Compliance Impact:** SOC 2 CC6.1, ISO 27001 A.9.4.1
 
 ---

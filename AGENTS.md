@@ -1,6 +1,6 @@
 # AGENTS.md - Role Definitions & Quality Gates
 
-**Project:** Multi-Tenant BC/DR SaaS Platform
+**Project:** ResiliPath
 **Version:** 1.0
 **Generated:** 2026-03-30
 **Last Updated:** 2026-03-30
