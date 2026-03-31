@@ -18,7 +18,7 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 | Milestone | Date | Deliverable |
 |-----------|------|-------------|
 | Phase 0 Complete | 2026-03-28 | Foundation architecture ready (GCP, Firebase Auth, CI/CD, Firestore schema) |
-| Phase 1 MVP Launch | 2026-04-01 | Resilience Exercise Execution Engine (Modular GCP/Firebase architecture, Vercel frontend) |
+| Phase 1 MVP Launch | 2026-04-01 | [Resilience Exercise Execution Engine](phases/phase-1/summary.md) (Modular GCP/Firebase architecture, Vercel frontend) |
 | Phase 2 Alpha | 2026-05-27 | BCP Plan Generation + Multi-format exports + Offline mode (PWA Service Workers) |
 | Phase 3 Hardening | 2026-07-22 | Crisis Communications (Multi-channel) + Performance optimization + SSO/SAML |
 | Phase 4 Scale | 2026-10-01 | Vendor Risk + Compliance Mapper + ML analytics + Partner API |

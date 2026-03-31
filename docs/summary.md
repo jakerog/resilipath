@@ -49,7 +49,7 @@ Build a subscription-based, isolated, modular SaaS platform for Business Resilie
 
 ### Module 1: Resilience Exercise Execution Engine (MVP ONLY)
 **Priority:** MVP-CRITICAL  
-**Timeline:** Phase 1 (Weeks 5-8)
+**Timeline:** [Phase 1](phases/phase-1/summary.md) (Weeks 5-8)
 **Launch Target:** 04/01/2026
 
 | Feature | Modular Specification | Architecture Component |
