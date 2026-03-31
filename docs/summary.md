@@ -61,7 +61,7 @@ Build a subscription-based, multi-tenant, modular SaaS platform for Business Con
 | **Evidence Collection** | Photo (25MB max) + Text only; Metadata Envelope | Firebase Storage + Cloud Functions |
 | **Timing Tracking** | Estimated vs. Actual duration; Variance calculation | Cloud Functions (server-side UTC) |
 | **Real-time Dashboard** | Live exercise status; Gantt visualization | Next.js (Vercel) + Firestore Real-time SDK |
-| **Role-Based Access** | Admin, User, Report, Moderator roles | Firebase Auth Custom Claims + Security Rules |
+| **Role-Based Access** | Admin, User, Report, Moderator roles; SSO/SAML deferred | Firebase Auth Custom Claims + Security Rules |
 | **Communication Engine** | Lists, templates, scheduling, delivery tracking | Firebase Extensions (Trigger Email/SMS) |
 | **Report Dashboard** | 4 required reports; PDF export only | Cloud Functions + Puppeteer |
 

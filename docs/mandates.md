@@ -108,7 +108,7 @@
 - [x] Four roles implemented: Admin, User, Report, Moderator
 - [x] Field-level permissions for User role: Enforced via **Firestore Security Rules**
 - [x] RBAC enforced at **Firebase Auth Custom Claims level + Security Rules**
-- [x] Role assignment per tenant, not global; SSO/SAML supported via Identity Platform
+- [x] Role assignment per tenant, not global; SSO/SAML deferred to Phase 3 (Identity Platform readiness)
 
 ### Verification
 - [ ] Login as each role, verify accessible features match specification
