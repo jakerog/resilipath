@@ -54,16 +54,16 @@ Build a subscription-based, isolated, modular SaaS platform for Business Resilie
 
 | Feature | Modular Specification | Architecture Component |
 |---------|-------------------|----------------------|
-| **Runbook Import** | Preview & Map UI (Option A) | Next.js (Vercel) + Cloud Functions |
-| **Task Orchestration** | Custom DAG Engine with circular dependency validation | Cloud Functions (Node.js) + Firestore |
-| **Stage Management** | 8 stages: Pre-Failover, Failover, Post-Failover, etc. | Firestore schema + Security Rules |
-| **Resource Check-in** | SMS primary + Manual dashboard | Firebase Extensions (Twilio) + Cloud Functions |
-| **Evidence Collection** | Photo (25MB max) + Text only; Metadata Envelope | Firebase Storage + Cloud Functions |
-| **Timing Tracking** | Estimated vs. Actual duration; Variance calculation | Cloud Functions (server-side UTC) |
-| **Real-time Dashboard** | Live exercise status; Gantt visualization | Next.js (Vercel) + Firestore Real-time SDK |
-| **Role-Based Access** | Admin, User, Report, Moderator roles; SSO/SAML deferred | Firebase Auth Custom Claims + Security Rules |
-| **Communication Engine** | Lists, templates, scheduling, delivery tracking | Firebase Extensions (Trigger Email/SMS) |
-| **Report Dashboard** | 4 required reports; PDF export only | Cloud Functions + Puppeteer |
+| **Runbook Import** | Preview & Map UI (Option A) | [Next.js (Vercel) + Cloud Functions](phases/phase-1/1.7-uifoundation.md) |
+| **Task Orchestration** | Custom DAG Engine with circular dependency validation | [Cloud Functions (Node.js) + Firestore](phases/phase-1/1.5-orchestration.md) |
+| **Stage Management** | 8 stages: Pre-Failover, Failover, Post-Failover, etc. | [Firestore schema + Security Rules](phases/phase-1/1.3-datalayer.md) |
+| **Resource Check-in** | SMS primary + Manual dashboard | [Firebase Extensions (Twilio) + Cloud Functions](phases/phase-1/1.6-communications.md) |
+| **Evidence Collection** | Photo (25MB max) + Text only; Metadata Envelope | [Firebase Storage + Cloud Functions](phases/phase-1/1.4-evidence.md) |
+| **Timing Tracking** | Estimated vs. Actual duration; Variance calculation | [Cloud Functions (server-side UTC)](phases/phase-1/1.5-orchestration.md) |
+| **Real-time Dashboard** | Live exercise status; Gantt visualization | [Next.js (Vercel) + Firestore Real-time SDK](phases/phase-1/1.8-dashboard.md) |
+| **Role-Based Access** | Admin, User, Report, Moderator roles; SSO/SAML deferred | [Firebase Auth Custom Claims + Security Rules](phases/phase-1/1.2-identity.md) |
+| **Communication Engine** | Lists, templates, scheduling, delivery tracking | [Firebase Extensions (Trigger Email/SMS)](phases/phase-1/1.6-communications.md) |
+| **Report Dashboard** | 4 required reports; PDF export only | [Cloud Functions + Puppeteer](phases/phase-1/1.9-reporting.md) |
 
 ---
 

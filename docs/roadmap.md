@@ -51,15 +51,15 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 ## Phase 1: Module 1 MVP - Resilience Exercise Execution Engine (Weeks 5-8)
 
 ### Objectives
-- [x] **Sub-Phase 1.1: Environment & Tooling** (Vercel + Firebase Setup)
-- [x] **Sub-Phase 1.2: Identity & Access Management** (Firebase Auth + Custom Claims)
-- [x] **Sub-Phase 1.3: Data Layer & Multi-Tenancy** (Firestore + Security Rules)
-- [x] **Sub-Phase 1.4: Evidence Management** (Firebase Storage + Cloud Functions)
-- [x] **Sub-Phase 1.5: Core Business Logic** (DAG Engine + Cloud Functions)
-- [x] **Sub-Phase 1.6: Automated Communications** (Firebase Extensions for Email/SMS)
-- [x] **Sub-Phase 1.7: UI/UX Foundation** (Next.js on Vercel)
-- [x] **Sub-Phase 1.8: Task Execution UI & Real-time Sync** (Firestore Real-time SDK)
-- [x] **Sub-Phase 1.9: Compliance Reporting** (PDF Generation via Puppeteer)
+- [x] **[Sub-Phase 1.1: Infrastructure & Deployment Foundation](phases/phase-1/1.1-infrastructure.md)** (Vercel + Firebase Setup)
+- [x] **[Sub-Phase 1.2: Identity & Access Management](phases/phase-1/1.2-identity.md)** (Firebase Auth + Custom Claims)
+- [x] **[Sub-Phase 1.3: Data Layer & Persistence](phases/phase-1/1.3-datalayer.md)** (Firestore + Security Rules)
+- [x] **[Sub-Phase 1.4: Audit Evidence Management](phases/phase-1/1.4-evidence.md)** (Firebase Storage + Cloud Functions)
+- [x] **[Sub-Phase 1.5: Core Logic & Task Orchestration](phases/phase-1/1.5-orchestration.md)** (DAG Engine + Cloud Functions)
+- [x] **[Sub-Phase 1.6: Resilience Communications](phases/phase-1/1.6-communications.md)** (Firebase Extensions for Email/SMS)
+- [x] **[Sub-Phase 1.7: Frontend Foundation](phases/phase-1/1.7-uifoundation.md)** (Next.js on Vercel)
+- [x] **[Sub-Phase 1.8: Execution Dashboard & Real-time Sync](phases/phase-1/1.8-dashboard.md)** (Firestore Real-time SDK)
+- [x] **[Sub-Phase 1.9: Compliance Reporting](phases/phase-1/1.9-reporting.md)** (PDF Generation via Puppeteer)
 
 ### Success Metrics (Modular Architecture)
 
