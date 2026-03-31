@@ -2,8 +2,8 @@
 
 **Project:** ResiliPath
 **Version:** 1.0
-**Generated:** 2026-03-30
-**Last Updated:** 2026-03-30
+**Generated:** 2026-03-31
+**Last Updated:** 2026-03-31
 
 ---
 
@@ -16,7 +16,7 @@
 ### Core Competencies
 - ISO 22301 Business Continuity Management
 - NIST SP 800-34 Disaster Recovery Planning
-- ResiliPath-isolated SaaS architecture
+- multi-tenant SaaS architecture
 - Workflow orchestration engines
 - Audit & compliance evidence management
 
@@ -27,7 +27,7 @@
 | Agent | Domain | Responsibilities |
 |-------|--------|------------------|
 | **UX Agent** | Frontend Design | PWA/mobile-native skeuomorphic UI, accessibility, responsive design |
-| **Data Agent** | Database Design | Relational schema, ResiliPath-based isolation, backup/retention policies |
+| **Data Agent** | Database Design | Relational schema, multi-tenant isolation, backup/retention policies |
 | **Security Agent** | Security & Compliance | RBAC, audit logging, encryption, SOC 2/ISO 27001 alignment |
 | **DevOps Agent** | Infrastructure | CI/CD, containerization, monitoring, disaster recovery for the platform itself |
 | **Integration Agent** | APIs & Webhooks | Third-party integrations (ServiceNow, Azure ASR, email/SMS providers) |

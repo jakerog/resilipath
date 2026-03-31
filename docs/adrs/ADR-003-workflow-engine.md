@@ -1,7 +1,7 @@
 # ADR-003: Workflow Engine Technology (v4.0 - Modular GCP/Firebase MVP)
 
 **Status:** Accepted  
-**Date:** 2026-03-30  
+**Date:** 2026-03-31
 **Deciders:** Primary Agent, Data Agent  
 **Technical Context:** DR Exercise Task Orchestration - Single-Module MVP  
 **Compliance Impact:** SOC 2 CC7.1 (Change Management)

@@ -1,55 +1,38 @@
-
-
-
-
-
 # ADR-004: Document Generation Approach (MOVED to Phase 2)
 
 **Status:** Deferred to Phase 2  
-**Date:** 2026-03-30  
-**Deciders:** Primary Agent, Content Agent  
-**Technical Context:** BCP Plan Generation (Module 2) - Deferred from MVP  
+**Date:** 2026-03-31
+**Deciders:** ResiliPath Architect, Content Agent
+**Technical Context:** Resilience Plan Generation (Module 2) - Deferred from MVP
 **Compliance Impact:** ISO 22301 §9.2, SOC 2 CC3.2
 
+---
 
 ## Context
 
-This ADR was originally planned for MVP but has been **deferred to Phase 2** based on the single-module MVP scope decision.
+This ADR was originally planned for MVP but has been **deferred to Phase 2** based on the single-module MVP scope decision for ResiliPath.
 
 ### Original Context (For Reference)
-From clarification questions:
-- **Q49 BCP Templates:** Platform-managed base templates + tenant-specific overrides (Inheritance model)
-- **Q50 Version Control:** Linear versioning + immutable snapshots (not Git-like)
-- **Q51 Executive Summaries:** Auto-generate from exercise data
-- **Q52 Multi-format Export:** PDF (immutable), Excel (data analysis), PowerPoint (executive summary)
-
-From GPI BCP Plan analysis:
-- 11 sections with specific structure (Document Ownership, BCP Overview, Teams, BIA, etc.)
-- Annual review requirement (§9.2)
-- Approval workflows with digital signatures
-- Multiple appendices and references
-
+- BCP Templates: Platform-managed base templates + multi-tenant overrides (Inheritance model)
+- Version Control: Linear versioning + immutable snapshots
+- Multi-format Export: PDF (immutable), Word .docx, HTML
 
 ## Decision
 
-**DEFERRED TO PHASE 2** - This functionality is not included in the Single-Module MVP (DR Exercise Execution Engine only).
+**DEFERRED TO PHASE 2** - This functionality is not included in the ResiliPath Single-Module MVP (Disaster Recovery Exercise Execution Engine only).
 
 ### MVP Scope (What IS Included)
-- PDF report generation for DR exercises (4 required reports)
-- Basic drill log for lessons learned (ISO 22301 alignment)
-- Evidence collection with Metadata Envelope (Photo+Text only)
+- PDF report generation for exercise execution (Sub-Phase 1.9)
+- Basic lessons learned capture (Sub-Phase 1.5)
+- Photo and Text evidence collection (Sub-Phase 1.4)
 
 ### Phase 2 Scope (What WILL Be Added)
-- Guided interview workflow for BCP data collection
-- Template engine for BCP document generation
-- Version control for BCP documents
+- Guided interview workflow for Resilience data collection
+- Template engine for Resilience document generation
+- Version control for Resilience plans
 - Approval workflows with digital signatures
-- Output formats: PDF, Word .docx, HTML, Printable
-- Annual review workflow
-
+- Output formats: PDF, Word .docx, HTML
 
 ## Future Implementation Plan (Phase 2)
 
-When this ADR is activated in Phase 2, the following approach will be used:
-
-### Template Inheritance Structure
+When this ADR is activated in Phase 2, it will utilize serverless Cloud Functions and template engines compatible with the multi-tenant Firestore model.

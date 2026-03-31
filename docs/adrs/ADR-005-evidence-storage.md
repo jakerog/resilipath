@@ -1,7 +1,7 @@
 # ADR-005: Evidence Storage & Integrity (v4.0 - Modular GCP/Firebase MVP)
 
 **Status:** Accepted  
-**Date:** 2026-03-30  
+**Date:** 2026-03-31
 **Deciders:** Primary Agent, Security Agent, DevOps Agent  
 **Technical Context:** DR Exercise Evidence Collection - Single-Module MVP  
 **Compliance Impact:** SOC 2 CC7.2, ISO 27001 A.12.2.1
