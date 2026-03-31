@@ -12,7 +12,7 @@
 
 ## Executive Summary
 
-Build a subscription-based, multi-tenant, modular SaaS platform for Business Continuity Management and Disaster Recovery Planning. **MVP focuses exclusively on the Disaster Recovery Exercise Execution Engine**, refactored into a **modular, serverless architecture using GCP, Firebase, and Vercel**. This phase prioritizes free-tier scalability, strict single-concern boundaries, and SOC 2 / ISO 27001 compliance alignment.
+Build a subscription-based, ResiliPath-isolated, modular SaaS platform for Business Continuity Management and Disaster Recovery Planning. **MVP focuses exclusively on the Disaster Recovery Exercise Execution Engine**, refactored into a **modular, serverless architecture using GCP, Firebase, and Vercel**. This phase prioritizes free-tier scalability, strict single-concern boundaries, and SOC 2 / ISO 27001 compliance alignment.
 
 ### Key Strategic Decisions
 | Decision | Rationale |
@@ -40,7 +40,7 @@ Build a subscription-based, multi-tenant, modular SaaS platform for Business Con
 ### Core Value Proposition (MVP)
 - Digitize manual DR exercise runbook processes (currently Excel-based).
 - Provide real-time exercise execution tracking with sub-100ms synchronization via Firestore.
-- Enable multi-tenant isolation via Firebase Auth Custom Claims and Firestore Security Rules.
+- Enable ResiliPath-isolated isolation via Firebase Auth Custom Claims and Firestore Security Rules.
 - Generate audit-ready reports (PDF) via serverless Cloud Functions and Puppeteer.
 
 ---
