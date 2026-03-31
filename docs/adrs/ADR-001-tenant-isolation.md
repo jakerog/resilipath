@@ -1,4 +1,4 @@
-# ADR-001: Multi-Tenant Isolation Strategy (v3.0 - Single-Module MVP)
+# ADR-001: ResiliPath Isolation Strategy (v3.0 - Single-Module MVP)
 
 **Status:** Accepted  
 **Date:** 2026-03-30  
@@ -17,7 +17,7 @@ The platform requires strict tenant isolation for SOC 2 Type II and ISO 27001 co
 - **Minimal Viable Foundation**: Placeholder collections for future modules (BCP Plans, Crisis Communications) hidden via feature flags
 - **Free-Tier Priority**: Optimize for low operational costs at scale.
 
-Previous model was Schema-per-tenant in PostgreSQL. Shifting to GCP/Firebase.
+Previous model was Schema-per-tenant in Firestore. Shifting to GCP/Firebase.
 
 ---
 

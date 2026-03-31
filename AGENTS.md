@@ -11,7 +11,7 @@
 
 | Role | Responsibility |
 |------|----------------|
-| **Senior BC/DR Planner & L10 Architect** | Overall system design, BC/DR domain expertise, compliance alignment, technical architecture decisions |
+| **Senior Resilience Planner & L10 Architect** | Overall system design, Resilience domain expertise, compliance alignment, technical architecture decisions |
 
 ### Core Competencies
 - ISO 22301 Business Continuity Management

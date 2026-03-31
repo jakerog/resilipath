@@ -18,7 +18,7 @@ The platform requires a secure, SOC 2 / ISO 27001 compliant evidence storage sol
 - Direct-to-Storage presigned URLs (for scalability)
 - **Free-Tier Priority**: Optimize for storage and egress costs.
 
-Previous model was AWS S3. Shifting to **Firebase / Google Cloud Storage**.
+Previous model was Firebase Storage. Shifting to **Firebase / Google Cloud Storage**.
 
 ---
 

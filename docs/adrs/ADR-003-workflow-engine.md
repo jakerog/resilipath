@@ -18,7 +18,7 @@ The platform requires a robust task orchestration engine for DR exercises with s
 - Real-time Gantt visualization with sub-100ms latency
 - **Free-Tier Priority**: Optimize for serverless execution.
 
-Previous model used PostgreSQL many-to-many relationships. Shifting to **Firestore + Cloud Functions**.
+Previous model used Firestore many-to-many relationships. Shifting to **Firestore + Cloud Functions**.
 
 ---
 

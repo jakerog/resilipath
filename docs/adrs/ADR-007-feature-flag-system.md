@@ -16,7 +16,7 @@ The platform requires a simple feature flag system to enable "build foundation, 
 - Audit trail of feature flag changes
 - **Free-Tier Priority**: Optimize for configuration management.
 
-Previous model used a PostgreSQL JSONB column. Shifting to **Firebase Remote Config or Firestore-based Configuration**.
+Previous model used a Firestore JSONB column. Shifting to **Firebase Remote Config or Firestore-based Configuration**.
 
 ---
 
