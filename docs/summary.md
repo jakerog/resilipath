@@ -31,7 +31,7 @@ Build a subscription-based, isolated, modular SaaS platform for Business Resilie
 |----------|------|--------------|
 | `GPI Business Continuity Plan v2.0 2025-12-10.docx` | Sample BCP Plan | ISO 22301-aligned structure; 11 sections; annual review requirement |
 | `Prod Failover - Runbook CFIN DR.xlsx` | Resilience Exercise Runbook | 90 tasks, 8 stages, 15+ teams; timing tracking; variance analysis; evidence requirements |
-| `Disaster Recovery Hub.pdf` | Platform Requirements | 7 core tables; RBAC; PWA/mobile UX; notification engine; reporting dashboard |
+| `Resilience Hub.pdf` | Platform Requirements | 7 core tables; RBAC; PWA/mobile UX; notification engine; reporting dashboard |
 
 ---
 
