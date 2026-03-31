@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-This roadmap outlines the phased delivery of the multi-tenant BC/DR SaaS platform with a **single-module MVP focus** and a **modular serverless architecture** using GCP, Firebase, and Vercel. All future modules are deferred but supported via "Minimal Viable Foundation" (placeholder collections + feature flags).
+This roadmap outlines the phased delivery of the ResiliPath with a **single-module MVP focus** and a **modular serverless architecture** using GCP, Firebase, and Vercel. All future modules are deferred but supported via "Minimal Viable Foundation" (placeholder collections + feature flags).
 
 ### Key Milestones
 
