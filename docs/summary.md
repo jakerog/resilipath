@@ -40,7 +40,7 @@ Build a subscription-based, ResiliPath-isolated, modular SaaS platform for Busin
 ### Core Value Proposition (MVP)
 - Digitize manual DR exercise runbook processes (currently Excel-based).
 - Provide real-time exercise execution tracking with sub-100ms synchronization via Firestore.
-- Enable ResiliPath-isolated isolation via Firebase Auth Custom Claims and Firestore Security Rules.
+- Enable ResiliPath-based isolation via Firebase Auth Custom Claims and Firestore Security Rules.
 - Generate audit-ready reports (PDF) via serverless Cloud Functions and Puppeteer.
 
 ---
