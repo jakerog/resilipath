@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is authenticated and belongs to the tenant
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isTenantMember(tenantId) {
+      return isAuthenticated() && request.auth.token.tenantId == tenantId;
+    }
+
+    // R19: Evidence Management - tenantId prefix isolation
+    match /{tenantId}/{allPaths=**} {
+      allow read: if isTenantMember(tenantId);
+
+      // MVP: Photo uploads limited to 25MB (26214400 bytes), JPG/PNG/WebP only
+      allow write: if isTenantMember(tenantId)
+                   && request.resource.size < 25 * 1024 * 1024
+                   && (request.resource.contentType.matches('image/jpeg') ||
+                       request.resource.contentType.matches('image/png') ||
+                       request.resource.contentType.matches('image/webp'));
+    }
+  }
+}

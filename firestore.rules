@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated and belongs to the tenant
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isTenantMember(tenantId) {
+      return isAuthenticated() && request.auth.token.tenantId == tenantId;
+    }
+
+    // M1: Shared reference data accessible to all authenticated users
+    match /shared_reference/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only manageable via admin/GCP console
+    }
+
+    // R8: Audit Logging - Immutable (prevent updates/deletes)
+    // Placed before the generic match to ensure it takes precedence
+    match /audit_log/{logId} {
+      allow create: if isTenantMember(request.resource.data.tenantId);
+      allow read: if isTenantMember(resource.data.tenantId);
+      allow update, delete: if false;
+    }
+
+    // R16: Tenant Isolation - Every document must have a tenantId
+    // Refined to exclude system or special collections if needed, but for now
+    // we must ensure it doesn't overlap incorrectly with immutable collections.
+    match /{collection}/{document} {
+      // General rule for all collections not explicitly handled above
+      allow read, write: if (collection != 'audit_log' && collection != 'shared_reference')
+                         && isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    // Placeholder for other collections mentioned in M13
+    match /tenants/{tenantId} {
+      allow read: if isTenantMember(tenantId);
+      allow write: if false; // Managed by onboarding process
+    }
+
+    // Resilience terminology applied (Replacing legacy BCP/DR)
+    match /resilience_plans/{planId} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    match /resilience_exercises/{exerciseId=**} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    match /communications/{commId} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    match /vendor_risk/{riskId} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+  }
+}

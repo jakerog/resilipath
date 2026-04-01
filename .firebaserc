@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "resilipath-dev",
+    "staging": "resilipath-staging",
+    "production": "resilipath-prod"
+  }
+}
