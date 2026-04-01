@@ -1,11 +1,49 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Evidence collection: Tenant isolation (M2)
-    // Files must be prefixed with their tenantId.
-    match /evidence/{tenantId}/{allPaths=**} {
-      allow read, write: if request.auth != null &&
-                          request.auth.token.tenantId == tenantId;
+
+    // ---------------------------------------------------------
+    // Helper Functions
+    // ---------------------------------------------------------
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isGlobalSuperUser() {
+      return isAuthenticated() && request.auth.token.isGlobalSuperUser == true;
+    }
+
+    function getTenantId() {
+      return request.auth.token.tenantId;
+    }
+
+    // ---------------------------------------------------------
+    // Evidence Collection (Task 2 / Task 6 / M2)
+    // Path Isolation: /tenants/{tenantId}/evidence/{exerciseId}/{taskId}/{fileName}
+    // ---------------------------------------------------------
+    match /tenants/{tenantId}/evidence/{exerciseId}/{taskId}/{fileName} {
+
+      // Read access allowed for authenticated users within the same tenant (M1/M2)
+      allow read: if isAuthenticated() && (tenantId == getTenantId() || isGlobalSuperUser());
+
+      // Create access allowed for authenticated users within the same tenant (M1/M2)
+      // Enforce 25MB limit for MVP (M2)
+      allow create: if isAuthenticated() &&
+                    (tenantId == getTenantId()) &&
+                    request.resource.size < 25 * 1024 * 1024;
+
+      // Immutability (Task 6 / M2)
+      // Evidence is immutable once uploaded; update and delete operations are strictly prohibited.
+      allow update, delete: if isGlobalSuperUser(); // Only global superusers for administrative cleanup.
+    }
+
+    // ---------------------------------------------------------
+    // Shared Templates (M1)
+    // ---------------------------------------------------------
+    match /shared/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isGlobalSuperUser();
     }
   }
 }
