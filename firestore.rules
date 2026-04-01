@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated and belongs to the tenant
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isTenantMember(tenantId) {
+      return isAuthenticated() && request.auth.token.tenantId == tenantId;
+    }
+
+    // M1: Shared reference data accessible to all authenticated users
+    match /shared_reference/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only manageable via admin/GCP console
+    }
+
+    // R16: Tenant Isolation - Every document must have a tenantId
+    match /{collection}/{document} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    // R8: Audit Logging - Immutable (prevent updates/deletes)
+    match /audit_log/{logId} {
+      allow create: if isTenantMember(request.resource.data.tenantId);
+      allow read: if isTenantMember(resource.data.tenantId);
+      allow update, delete: if false;
+    }
+
+    // Placeholder for other collections mentioned in M13
+    match /tenants/{tenantId} {
+      allow read: if isTenantMember(tenantId);
+      allow write: if false; // Managed by onboarding process
+    }
+
+    // Resilience terminology applied (Replacing legacy BCP/DR)
+    match /resilience_plans/{planId} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    match /resilience_exercises/{exerciseId=**} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    match /communications/{commId} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+
+    match /vendor_risk/{riskId} {
+      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
+    }
+  }
+}
