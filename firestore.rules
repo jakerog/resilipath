@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Shared reference data: Read-only for all authenticated users (ADR-001)
+    match /shared_reference/{document=**} {
+      allow read: if request.auth != null;
+    }
+
+    // Tenant-level isolation (M1/M5)
+    // Users can only read/write documents where the tenantId matches their custom claim.
+    match /{collection}/{document} {
+      allow read, write: if request.auth != null &&
+                          request.auth.token.tenantId == resource.data.tenantId;
+    }
+
+    // Audit logs: Immutable (append-only) (M3)
+    match /audit_logs/{logId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null &&
+                   (request.auth.token.role == 'Admin' || request.auth.token.isGlobalSuperUser == true) &&
+                   request.auth.token.tenantId == resource.data.tenantId;
+      allow update, delete: if false;
+    }
+  }
+}

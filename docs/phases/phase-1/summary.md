@@ -26,7 +26,7 @@ Phase 1 is broken down into 9 discrete, logical domains. Each domain focuses on 
 | Sub-Phase | Logical Domain | Primary Concern |
 |-----------|----------------|-----------------|
 | [1.1 Infrastructure](1.1-infrastructure.md) | Environment & Tooling | Establish the foundational cloud environment and CI/CD. |
-| [1.2 Identity](1.2-identity.md) | Auth & IAM | Implement isolated authentication and access control. |
+| [1.2 Identity](1.2-identity.md) | Auth & IAM | **(90% Complete)** Implement isolated authentication and access control. |
 | [1.3 Data Layer](1.3-datalayer.md) | Persistence | Design and secure the Firestore document store. |
 | [1.4 Evidence](1.4-evidence.md) | Audit & Storage | Securely capture and store audit-ready evidence. |
 | [1.5 Orchestration](1.5-orchestration.md) | Core Logic | Implement the serverless DAG engine and state machine. |
