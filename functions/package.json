@@ -1,8 +1,8 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "echo \"Linting placeholder\"",
-    "build": "echo \"Building placeholder\"",
+    "lint": "echo \"Linting skipped for sub-phase 1.1 placeholder\"",
+    "build": "tsc",
     "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",

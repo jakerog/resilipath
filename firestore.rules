@@ -16,16 +16,21 @@ service cloud.firestore {
       allow write: if false; // Only manageable via admin/GCP console
     }
 
-    // R16: Tenant Isolation - Every document must have a tenantId
-    match /{collection}/{document} {
-      allow read, write: if isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
-    }
-
     // R8: Audit Logging - Immutable (prevent updates/deletes)
+    // Placed before the generic match to ensure it takes precedence
     match /audit_log/{logId} {
       allow create: if isTenantMember(request.resource.data.tenantId);
       allow read: if isTenantMember(resource.data.tenantId);
       allow update, delete: if false;
+    }
+
+    // R16: Tenant Isolation - Every document must have a tenantId
+    // Refined to exclude system or special collections if needed, but for now
+    // we must ensure it doesn't overlap incorrectly with immutable collections.
+    match /{collection}/{document} {
+      // General rule for all collections not explicitly handled above
+      allow read, write: if (collection != 'audit_log' && collection != 'shared_reference')
+                         && isTenantMember(resource.data.tenantId || request.resource.data.tenantId);
     }
 
     // Placeholder for other collections mentioned in M13
