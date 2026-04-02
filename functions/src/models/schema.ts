@@ -216,4 +216,6 @@ export interface ResiliencePlan {
   lastModifiedBy: string; // UID
   updatedAt: FieldValue | Date;
   snapshotIds?: string[]; // Links to immutable versions
+  reviewCycleDays?: number; // Governance (e.g., 365 for annual)
+  nextReviewAt?: FieldValue | Date; // Automated tracking
 }

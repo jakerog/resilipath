@@ -7,7 +7,8 @@ import { where, orderBy, collection, addDoc, serverTimestamp } from 'firebase/fi
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { BookOpen, FileText, Plus, ArrowRight, Shield } from 'lucide-react';
+import { ReviewSummary } from '@/components/planning/ReviewSummary';
+import { BookOpen, FileText, Plus, ArrowRight, Shield, Clock } from 'lucide-react';
 
 export default function PlanGallery() {
   const router = useRouter();
@@ -83,6 +84,8 @@ export default function PlanGallery() {
       </header>
 
       <main className="max-w-7xl mx-auto space-y-12">
+        <ReviewSummary plans={plans} />
+
         {/* Active Plans Section */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
@@ -108,6 +111,12 @@ export default function PlanGallery() {
                     }`} />
                     <span className="capitalize">{plan.status.replace('_', ' ')}</span>
                   </div>
+                  {plan.nextReviewAt && (
+                    <div className="text-[10px] font-bold text-brand-secondary/60 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      Next Review: {plan.nextReviewAt.toDate().toLocaleDateString()}
+                    </div>
+                  )}
                   <button
                     onClick={() => router.push(`/plans/${plan.id}`)}
                     className="w-full neumorphic-button py-2 text-xs font-bold text-brand-primary flex items-center justify-center gap-2"
