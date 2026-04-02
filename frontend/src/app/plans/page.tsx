@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
-import { where, orderBy } from 'firebase/firestore';
+import { where, orderBy, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { BookOpen, FileText, Plus, ArrowRight, Shield } from 'lucide-react';
 
 export default function PlanGallery() {
-  const { tenantId, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const { tenantId, user, loading: authLoading } = useAuth();
 
   // 1. Fetch available templates (global)
   const { data: templates, loading: templatesLoading } = useFirestoreQuery('bcp_templates');
@@ -23,6 +26,30 @@ export default function PlanGallery() {
   }, [tenantId]);
 
   const { data: plans, loading: plansLoading } = useFirestoreQuery('plans', planConstraints);
+
+  const [isCreating, setIsCreating] = React.useState(false);
+
+  const handleCreatePlan = async (template: any) => {
+    if (!tenantId || !user) return;
+    setIsCreating(true);
+    try {
+      const planRef = await addDoc(collection(db, 'plans'), {
+        tenantId,
+        templateId: template.templateId,
+        name: `${template.name} - ${new Date().toLocaleDateString()}`,
+        status: 'draft',
+        version: 1,
+        data: {},
+        lastModifiedBy: user.uid,
+        updatedAt: serverTimestamp(),
+      });
+      router.push(`/plans/${planRef.id}`);
+    } catch (err) {
+      console.error('Failed to create plan:', err);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const loading = authLoading || templatesLoading || plansLoading;
 
@@ -81,7 +108,10 @@ export default function PlanGallery() {
                     }`} />
                     <span className="capitalize">{plan.status.replace('_', ' ')}</span>
                   </div>
-                  <button className="w-full neumorphic-button py-2 text-xs font-bold text-brand-primary flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => router.push(`/plans/${plan.id}`)}
+                    className="w-full neumorphic-button py-2 text-xs font-bold text-brand-primary flex items-center justify-center gap-2"
+                  >
                     Open Plan <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
@@ -118,8 +148,12 @@ export default function PlanGallery() {
                   </p>
                 </div>
                 <div className="mt-6 pt-6 border-t border-brand-secondary/10">
-                  <button className="w-full neumorphic-button py-2 text-xs font-bold text-brand-accent flex items-center justify-center gap-2">
-                    <Plus className="w-3 h-3" /> Use Template
+                  <button
+                    onClick={() => handleCreatePlan(template)}
+                    disabled={isCreating}
+                    className="w-full neumorphic-button py-2 text-xs font-bold text-brand-accent flex items-center justify-center gap-2"
+                  >
+                    <Plus className="w-3 h-3" /> {isCreating ? 'Initializing...' : 'Use Template'}
                   </button>
                 </div>
               </SkeuomorphicContainer>

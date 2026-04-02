@@ -1,0 +1,127 @@
+'use client';
+
+import React, { useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
+import { where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
+import { GuidedInterview } from '@/components/planning/GuidedInterview';
+import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
+import { ChevronLeft, FileText, CheckCircle } from 'lucide-react';
+
+export default function PlanEditor() {
+  const params = useParams();
+  const router = useRouter();
+  const planId = params.planId as string;
+  const { tenantId, user, loading: authLoading } = useAuth();
+
+  // 1. Fetch the specific plan
+  const planConstraints = useMemo(() => {
+    if (!tenantId) return [];
+    return [where('tenantId', '==', tenantId)];
+  }, [tenantId]);
+
+  const { data: plans, loading: planLoading } = useFirestoreQuery('plans', planConstraints);
+  const plan = plans.find((p: any) => p.id === planId) as any;
+
+  // 2. Fetch the template for this plan
+  const templateId = plan?.templateId;
+  const { data: templates, loading: templateLoading } = useFirestoreQuery('bcp_templates');
+  const template = templates.find((t: any) => t.templateId === templateId) as any;
+
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleSave = async (data: Record<string, any>) => {
+    if (!planId || !user) return;
+    setIsSaving(true);
+    try {
+      const planRef = doc(db, 'plans', planId);
+      await updateDoc(planRef, {
+        data,
+        lastModifiedBy: user.uid,
+        updatedAt: serverTimestamp(),
+      });
+      console.log('Plan updated successfully');
+    } catch (err) {
+      console.error('Failed to update plan:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const loading = authLoading || planLoading || (plan && templateLoading);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6]">
+        <div className="flex flex-col items-center gap-4">
+          <FileText className="w-10 h-10 text-brand-accent animate-pulse" />
+          <p className="text-sm font-bold text-brand-primary uppercase tracking-widest">
+            Loading Resilience Plan...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!plan) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6]">
+        <SkeuomorphicContainer className="text-center p-12">
+          <h2 className="text-xl font-bold text-brand-primary mb-4">Plan Not Found</h2>
+          <button
+            onClick={() => router.push('/plans')}
+            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-accent uppercase"
+          >
+            Back to Gallery
+          </button>
+        </SkeuomorphicContainer>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f4f7f6] p-4 md:p-8">
+      <header className="max-w-5xl mx-auto mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => router.push('/plans')}
+            className="neumorphic-button p-3 hover:text-brand-accent transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-brand-primary">{plan.name}</h1>
+             <div className="flex items-center gap-4 mt-1">
+              <span className="text-[10px] font-bold text-brand-secondary uppercase tracking-widest opacity-60">
+                Resilience Plan Editor • v{plan.version}
+              </span>
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-success uppercase tracking-widest">
+                <CheckCircle className="w-3 h-3" />
+                Auto-save active
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto">
+        {template ? (
+          <GuidedInterview
+            template={template}
+            initialData={plan.data}
+            onSave={handleSave}
+            isSaving={isSaving}
+          />
+        ) : (
+          <SkeuomorphicContainer className="text-center py-20">
+             <p className="text-sm italic text-brand-secondary opacity-50">
+               Associating template metadata...
+             </p>
+          </SkeuomorphicContainer>
+        )}
+      </main>
+    </div>
+  );
+}
