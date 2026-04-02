@@ -1,24 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
-import { orderBy } from 'firebase/firestore';
+import { orderBy, where } from 'firebase/firestore';
+import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Database, ShieldCheck, Tag, User, Clock } from 'lucide-react';
 
 export default function AssetRegistry() {
-  // Use client-side only check to prevent build-time Firebase errors
-  const [isClient, setIsClient] = React.useState(false);
+  const { tenantId, loading: authLoading } = useAuth();
 
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const constraints = useMemo(() => {
+    if (!tenantId) return [];
+    return [
+      where('tenantId', '==', tenantId),
+      orderBy('name', 'asc')
+    ];
+  }, [tenantId]);
 
-  const { data: assets, loading: queryLoading } = useFirestoreQuery('assets', isClient ? [
-    orderBy('name', 'asc')
-  ] : []);
+  const { data: assets, loading: queryLoading } = useFirestoreQuery('assets', constraints);
 
-  const loading = !isClient || queryLoading;
+  const loading = authLoading || queryLoading;
 
   if (loading) {
     return (

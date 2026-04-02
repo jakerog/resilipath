@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
 import { where, orderBy, doc, updateDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 import { TaskCard, TaskStatus } from '@/components/dashboard/TaskCard';
 import { AssetMapper } from '@/components/dashboard/AssetMapper';
 import { GanttChart } from '@/components/dashboard/GanttChart';
@@ -17,20 +18,31 @@ export default function ExerciseDashboard() {
   const params = useParams();
   const exerciseId = params.exerciseId as string;
   const [activeMapperTaskId, setActiveMapperTaskId] = React.useState<string | null>(null);
+  const { tenantId, loading: authLoading } = useAuth();
 
   // 1. Real-time Exercise Metadata (Task 7 optimization)
-  const { data: exercises } = useFirestoreQuery('exercises', [
-    where('exerciseId', '==', exerciseId)
-  ]);
+  const exerciseConstraints = useMemo(() => {
+    if (!tenantId) return [];
+    return [
+      where('tenantId', '==', tenantId),
+      where('exerciseId', '==', exerciseId)
+    ];
+  }, [tenantId, exerciseId]);
+
+  const { data: exercises, loading: exerciseLoading } = useFirestoreQuery('exercises', exerciseConstraints);
   const exercise = exercises[0] as any;
 
   // 2. Real-time Tasks (Task 1)
-  const taskConstraints = useMemo(() => [
-    where('exerciseId', '==', exerciseId)
-  ], [exerciseId]);
+  const taskConstraints = useMemo(() => {
+    if (!tenantId) return [];
+    return [
+      where('tenantId', '==', tenantId),
+      where('exerciseId', '==', exerciseId)
+    ];
+  }, [tenantId, exerciseId]);
 
   const { data: tasks, loading: tasksLoading } = useFirestoreQuery('tasks', taskConstraints);
-  const loading = tasksLoading;
+  const loading = authLoading || exerciseLoading || tasksLoading;
 
   // 3. Asset Mapping (Phase 2)
   const handleToggleAsset = useCallback(async (taskId: string, assetId: string, currentAssetIds: string[] = []) => {

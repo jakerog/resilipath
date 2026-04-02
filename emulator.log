@@ -26,3 +26,10 @@ i  firestore: Change detected, updating rules...
 ⚠  firestore.rules:28:14 - WARNING Unused function: hasRole.
 ⚠  firestore.rules:28:22 - WARNING Unused variable: role.
 ✔  firestore: Rules updated.
+⚠  firestore: Fatal error occurred:
+   Firestore Emulator has exited with code: 143,
+   stopping all running emulators
+i  ui: Stopping Emulator UI
+i  firestore: Stopping Firestore Emulator
+i  hub: Stopping emulator hub
+i  logging: Stopping Logging Emulator

@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
+import { where, orderBy } from 'firebase/firestore';
+import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Tag, CheckCircle2, Circle, X } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -15,7 +17,17 @@ export const AssetMapper: React.FC<AssetMapperProps> = ({
   onToggleAsset,
   onClose
 }) => {
-  const { data: assets, loading } = useFirestoreQuery('assets');
+  const { tenantId } = useAuth();
+
+  const constraints = useMemo(() => {
+    if (!tenantId) return [];
+    return [
+      where('tenantId', '==', tenantId),
+      orderBy('name', 'asc')
+    ];
+  }, [tenantId]);
+
+  const { data: assets, loading } = useFirestoreQuery('assets', constraints);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
