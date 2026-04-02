@@ -2,10 +2,11 @@
 
 import React, { useMemo } from 'react';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
-import { orderBy, where } from 'firebase/firestore';
+import { orderBy, where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '@/hooks/useAuth';
+import { db } from '@/lib/firebase';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { Database, ShieldCheck, Tag, User, Clock } from 'lucide-react';
+import { Database, ShieldCheck, Tag, User, Clock, CheckCircle2 } from 'lucide-react';
 
 export default function AssetRegistry() {
   const { tenantId, loading: authLoading } = useAuth();
@@ -19,6 +20,17 @@ export default function AssetRegistry() {
   }, [tenantId]);
 
   const { data: assets, loading: queryLoading } = useFirestoreQuery('assets', constraints);
+
+  const handleMarkReviewed = async (assetId: string) => {
+    try {
+      const assetRef = doc(db, 'assets', assetId);
+      await updateDoc(assetRef, {
+        lastReviewedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error('Failed to update review status:', err);
+    }
+  };
 
   const loading = authLoading || queryLoading;
 
@@ -65,6 +77,7 @@ export default function AssetRegistry() {
                   <th className="px-6 py-4">Criticality</th>
                   <th className="px-6 py-4">RTO / RPO</th>
                   <th className="px-6 py-4">Last Reviewed</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-secondary/10">
@@ -97,7 +110,16 @@ export default function AssetRegistry() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-xs text-brand-secondary">
-                      {asset.lastReviewedAt?.toDate().toLocaleDateString() || 'Pending Review'}
+                      {asset.lastReviewedAt?.toDate?.().toLocaleDateString() || 'Pending Review'}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => handleMarkReviewed(asset.id)}
+                        className="neumorphic-button p-2 text-brand-success hover:scale-110 transition-transform"
+                        title="Mark as Reviewed"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}

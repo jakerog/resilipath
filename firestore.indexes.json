@@ -25,6 +25,14 @@
         { "fieldPath": "tenantId", "order": "ASCENDING" },
         { "fieldPath": "when", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "assets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tenantId", "order": "ASCENDING" },
+        { "fieldPath": "name", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

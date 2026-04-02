@@ -1,4 +1,4 @@
-(node:129532) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(node:721159) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 ⚠  emulators: You are not currently authenticated so some features may not work correctly. Please run firebase login to authenticate the CLI.
 i  emulators: Starting emulators: firestore
@@ -19,17 +19,3 @@ i  firestore: Firestore Emulator logging to firestore-debug.log
   Other reserved ports: 4500, 9150
 
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
-
-i  firestore: Change detected, updating rules...
-⚠  firestore.rules:20:14 - WARNING Unused function: getRole.
-⚠  firestore.rules:24:30 - WARNING Unused variable: doc.
-⚠  firestore.rules:28:14 - WARNING Unused function: hasRole.
-⚠  firestore.rules:28:22 - WARNING Unused variable: role.
-✔  firestore: Rules updated.
-⚠  firestore: Fatal error occurred:
-   Firestore Emulator has exited with code: 143,
-   stopping all running emulators
-i  ui: Stopping Emulator UI
-i  firestore: Stopping Firestore Emulator
-i  hub: Stopping emulator hub
-i  logging: Stopping Logging Emulator
