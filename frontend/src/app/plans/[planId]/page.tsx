@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { GuidedInterview } from '@/components/planning/GuidedInterview';
 import { SyncStatus } from '@/components/layout/SyncStatus';
+import { SyncConflictModal } from '@/components/planning/SyncConflictModal';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -19,7 +20,15 @@ export default function PlanEditor() {
   const router = useRouter();
   const planId = params.planId as string;
   const { tenantId, user, loading: authLoading } = useAuth();
-  const { isOnline, hasLocalDraft, persistLocally, removeLocal } = useOfflineSync(planId, tenantId);
+  const {
+    isOnline,
+    hasLocalDraft,
+    localDraft,
+    syncing: isBackgroundSyncing,
+    persistLocally,
+    removeLocal,
+    syncToCloud
+  } = useOfflineSync(planId, tenantId);
 
   // 1. Fetch the specific plan
   const planConstraints = useMemo(() => {
@@ -88,6 +97,9 @@ export default function PlanEditor() {
   };
 
   const loading = authLoading || planLoading || (plan && templateLoading);
+
+  const showConflictModal = isOnline && hasLocalDraft && localDraft &&
+    (!plan.updatedAt || localDraft.updatedAt > plan.updatedAt.toDate().getTime() + 1000);
 
   if (loading) {
     return (
@@ -164,8 +176,21 @@ export default function PlanEditor() {
       </header>
 
       <div className="max-w-5xl mx-auto mb-8">
-        <SyncStatus isOnline={isOnline} hasLocalData={hasLocalDraft} />
+        <SyncStatus
+          isOnline={isOnline}
+          hasLocalData={hasLocalDraft}
+          isSyncing={isBackgroundSyncing}
+        />
       </div>
+
+      {showConflictModal && (
+        <SyncConflictModal
+          localUpdatedAt={localDraft.updatedAt}
+          onSync={() => syncToCloud(user!.uid)}
+          onDiscard={removeLocal}
+          isSyncing={isBackgroundSyncing}
+        />
+      )}
 
       <main className="max-w-5xl mx-auto grid lg:grid-cols-12 gap-8 items-start">
         <div className={clsx("transition-all duration-500", showHistory ? "lg:col-span-8" : "lg:col-span-12")}>
