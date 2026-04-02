@@ -7,7 +7,9 @@ import { where, doc, updateDoc, serverTimestamp, orderBy } from 'firebase/firest
 import { db, functions } from '@/lib/firebase';
 import { httpsCallable } from 'firebase/functions';
 import { useAuth } from '@/hooks/useAuth';
+import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { GuidedInterview } from '@/components/planning/GuidedInterview';
+import { SyncStatus } from '@/components/layout/SyncStatus';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -17,6 +19,7 @@ export default function PlanEditor() {
   const router = useRouter();
   const planId = params.planId as string;
   const { tenantId, user, loading: authLoading } = useAuth();
+  const { isOnline, hasLocalDraft, persistLocally, removeLocal } = useOfflineSync(planId, tenantId);
 
   // 1. Fetch the specific plan
   const planConstraints = useMemo(() => {
@@ -63,14 +66,22 @@ export default function PlanEditor() {
     setIsSaving(true);
     try {
       const planRef = doc(db, 'plans', planId);
-      await updateDoc(planRef, {
-        data,
-        lastModifiedBy: user.uid,
-        updatedAt: serverTimestamp(),
-      });
-      console.log('Plan updated successfully');
+      if (isOnline) {
+        await updateDoc(planRef, {
+          data,
+          lastModifiedBy: user.uid,
+          updatedAt: serverTimestamp(),
+        });
+        await removeLocal();
+        console.log('Plan updated successfully (Cloud)');
+      } else {
+        await persistLocally(data);
+        console.log('Plan saved locally (Offline)');
+      }
     } catch (err) {
       console.error('Failed to update plan:', err);
+      // Fallback to local if cloud fails
+      await persistLocally(data);
     } finally {
       setIsSaving(false);
     }
@@ -143,14 +154,18 @@ export default function PlanEditor() {
           </button>
           <button
             onClick={handleSnapshot}
-            disabled={isSnapshotting}
-            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2"
+            disabled={isSnapshotting || !isOnline}
+            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
           >
             <Camera className={clsx("w-4 h-4 text-brand-accent", isSnapshotting && "animate-pulse")} />
             {isSnapshotting ? "Snapshotting..." : "Create Snapshot"}
           </button>
         </div>
       </header>
+
+      <div className="max-w-5xl mx-auto mb-8">
+        <SyncStatus isOnline={isOnline} hasLocalData={hasLocalDraft} />
+      </div>
 
       <main className="max-w-5xl mx-auto grid lg:grid-cols-12 gap-8 items-start">
         <div className={clsx("transition-all duration-500", showHistory ? "lg:col-span-8" : "lg:col-span-12")}>
