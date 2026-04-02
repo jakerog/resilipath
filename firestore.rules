@@ -124,6 +124,11 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
     }
 
+    match /plan_snapshots/{snapshotId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create, update, delete: if false; // Only created via Service Account (snapshotPlan API)
+    }
+
     match /vendors/{vendorId} {
       allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
       allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();

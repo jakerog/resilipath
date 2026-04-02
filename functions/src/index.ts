@@ -20,3 +20,4 @@ export * from './orchestration/api';
 export * from './communications/index';
 export * from './reporting/api';
 export * from './assets/triggers';
+export * from './planning/api';

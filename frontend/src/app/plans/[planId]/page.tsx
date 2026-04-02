@@ -3,12 +3,14 @@
 import React, { useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
-import { where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { where, doc, updateDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { db, functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 import { useAuth } from '@/hooks/useAuth';
 import { GuidedInterview } from '@/components/planning/GuidedInterview';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { ChevronLeft, FileText, CheckCircle } from 'lucide-react';
+import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock } from 'lucide-react';
+import { clsx } from 'clsx';
 
 export default function PlanEditor() {
   const params = useParams();
@@ -30,7 +32,31 @@ export default function PlanEditor() {
   const { data: templates, loading: templateLoading } = useFirestoreQuery('bcp_templates');
   const template = templates.find((t: any) => t.templateId === templateId) as any;
 
+  // 3. Fetch snapshots
+  const snapshotConstraints = useMemo(() => {
+    if (!planId) return [];
+    return [where('originalPlanId', '==', planId), orderBy('snapshottedAt', 'desc')];
+  }, [planId]);
+
+  const { data: snapshots } = useFirestoreQuery('plan_snapshots', snapshotConstraints);
+
   const [isSaving, setIsSaving] = React.useState(false);
+  const [isSnapshotting, setIsSnapshotting] = React.useState(false);
+  const [showHistory, setShowHistory] = React.useState(false);
+
+  const handleSnapshot = async () => {
+    if (!planId) return;
+    setIsSnapshotting(true);
+    try {
+      const snapshotFunc = httpsCallable(functions, 'snapshotPlan');
+      await snapshotFunc({ planId, label: `Manual Snapshot v${plan.version}` });
+      console.log('Snapshot created');
+    } catch (err) {
+      console.error('Snapshot failed:', err);
+    } finally {
+      setIsSnapshotting(false);
+    }
+  };
 
   const handleSave = async (data: Record<string, any>) => {
     if (!planId || !user) return;
@@ -83,7 +109,7 @@ export default function PlanEditor() {
 
   return (
     <div className="min-h-screen bg-[#f4f7f6] p-4 md:p-8">
-      <header className="max-w-5xl mx-auto mb-8 flex items-center justify-between">
+      <header className="max-w-5xl mx-auto mb-8 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <button
             onClick={() => router.push('/plans')}
@@ -104,22 +130,81 @@ export default function PlanEditor() {
             </div>
           </div>
         </div>
+        <div className="flex gap-3">
+           <button
+            onClick={() => setShowHistory(!showHistory)}
+            className={clsx(
+              "neumorphic-button p-3 transition-colors",
+              showHistory ? "text-brand-accent neumorphic-inset" : "text-brand-secondary"
+            )}
+            title="Version History"
+          >
+            <History className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleSnapshot}
+            disabled={isSnapshotting}
+            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2"
+          >
+            <Camera className={clsx("w-4 h-4 text-brand-accent", isSnapshotting && "animate-pulse")} />
+            {isSnapshotting ? "Snapshotting..." : "Create Snapshot"}
+          </button>
+        </div>
       </header>
 
-      <main className="max-w-5xl mx-auto">
-        {template ? (
+      <main className="max-w-5xl mx-auto grid lg:grid-cols-12 gap-8 items-start">
+        <div className={clsx("transition-all duration-500", showHistory ? "lg:col-span-8" : "lg:col-span-12")}>
+          {template ? (
           <GuidedInterview
             template={template}
             initialData={plan.data}
             onSave={handleSave}
             isSaving={isSaving}
           />
-        ) : (
+          ) : (
           <SkeuomorphicContainer className="text-center py-20">
              <p className="text-sm italic text-brand-secondary opacity-50">
                Associating template metadata...
              </p>
           </SkeuomorphicContainer>
+          )}
+        </div>
+
+        {showHistory && (
+          <aside className="lg:col-span-4 space-y-6 animate-in slide-in-from-right-4 duration-300">
+            <h2 className="text-sm font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2">
+              <History className="w-4 h-4 text-brand-accent" />
+              Plan History
+            </h2>
+
+            <div className="space-y-4">
+              {snapshots.map((snap: any) => (
+                <SkeuomorphicContainer key={snap.id} inset className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <p className="text-xs font-bold text-brand-primary leading-tight">
+                      {snap.snapshotLabel}
+                    </p>
+                    <span className="text-[9px] font-bold bg-brand-primary/10 px-1.5 py-0.5 rounded text-brand-secondary">
+                      v{snap.version}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] text-brand-secondary font-medium uppercase opacity-60">
+                    <Clock className="w-3 h-3" />
+                    {snap.snapshottedAt?.toDate()?.toLocaleString()}
+                  </div>
+                  <button className="w-full neumorphic-button py-1.5 text-[10px] font-bold text-brand-accent uppercase tracking-tighter">
+                    View Immutable Snapshot
+                  </button>
+                </SkeuomorphicContainer>
+              ))}
+
+              {snapshots.length === 0 && (
+                <p className="text-xs italic text-brand-secondary text-center py-8 opacity-40">
+                  No snapshots captured yet.
+                </p>
+              )}
+            </div>
+          </aside>
         )}
       </main>
     </div>
