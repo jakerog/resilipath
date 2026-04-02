@@ -19,3 +19,13 @@ i  firestore: Firestore Emulator logging to firestore-debug.log
   Other reserved ports: 4500, 9150
 
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+
+i  firestore: Change detected, updating rules...
+✔  firestore: Rules updated.
+⚠  firestore: Fatal error occurred:
+   Firestore Emulator has exited with code: 143,
+   stopping all running emulators
+i  ui: Stopping Emulator UI
+i  firestore: Stopping Firestore Emulator
+i  hub: Stopping emulator hub
+i  logging: Stopping Logging Emulator

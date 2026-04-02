@@ -132,8 +132,23 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------
+    // Planning Engine (Phase 2 / M2)
+    // ---------------------------------------------------------
+    match /bcp_templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isGlobalSuperUser();
+    }
+
+    match /plans/{planId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    // ---------------------------------------------------------
     // Future Placeholders (M13)
     // ---------------------------------------------------------
-    match /bcp_plans/{docId} { allow read, write: if isGlobalSuperUser(); }
+    match /bcp_plans_legacy/{docId} { allow read, write: if isGlobalSuperUser(); }
   }
 }

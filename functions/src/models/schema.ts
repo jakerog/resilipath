@@ -176,3 +176,44 @@ export interface Vendor {
   slaMinutes?: number;
   lastReviewedAt: FieldValue | Date;
 }
+
+/**
+ * Phase 2: Planning Engine - BCP Template Schema
+ * Collection: /bcp_templates/{templateId}
+ */
+export interface BCPTemplate {
+  templateId: string;
+  name: string;
+  description: string;
+  category: 'it' | 'business' | 'regulatory';
+  sections: {
+    id: string;
+    title: string;
+    description: string;
+    questions: {
+      id: string;
+      text: string;
+      type: 'text' | 'choice' | 'multi-choice' | 'asset-link';
+      options?: string[];
+    }[];
+  }[];
+  version: string;
+  createdAt: FieldValue | Date;
+}
+
+/**
+ * Phase 2: Planning Engine - Resilience Plan Schema
+ * Collection: /plans/{planId}
+ */
+export interface ResiliencePlan {
+  planId: string;
+  tenantId: string; // Critical for isolation
+  templateId: string;
+  name: string;
+  status: 'draft' | 'under_review' | 'approved' | 'archived';
+  version: number;
+  data: Record<string, any>; // Stores interview responses
+  lastModifiedBy: string; // UID
+  updatedAt: FieldValue | Date;
+  snapshotIds?: string[]; // Links to immutable versions
+}
