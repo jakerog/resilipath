@@ -18,3 +18,4 @@ export * from './evidence/triggers';
 export * from './orchestration/triggers';
 export * from './orchestration/api';
 export * from './communications/index';
+export * from './reporting/api';
