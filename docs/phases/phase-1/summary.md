@@ -29,7 +29,7 @@ Phase 1 is broken down into 9 discrete, logical domains. Each domain focuses on 
 | [1.2 Identity](1.2-identity.md) | Auth & IAM | **(100% Complete)** Implement isolated authentication and access control. |
 | [1.3 Data Layer](1.3-datalayer.md) | Persistence | **(100% Complete)** Design and secure the Firestore document store. |
 | [1.4 Evidence](1.4-evidence.md) | Audit & Storage | **(100% Complete)** Securely capture and store audit-ready evidence. |
-| [1.5 Orchestration](1.5-orchestration.md) | Core Logic | Implement the serverless DAG engine and state machine. |
+| [1.5 Orchestration](1.5-orchestration.md) | Core Logic | **(100% Complete)** Implement the serverless DAG engine and state machine. |
 | [1.6 Communications](1.6-communications.md) | Resilience Comms | Deliver event-driven notifications to participants. |
 | [1.7 UI Foundation](1.7-uifoundation.md) | Frontend Base | Establish the core responsive PWA architecture. |
 | [1.8 Dashboard](1.8-dashboard.md) | Real-time UX | Live status dashboard with real-time sync. |

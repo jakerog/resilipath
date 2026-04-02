@@ -35,12 +35,19 @@ export const onEvidenceUploaded = functions.runWith({
   const [, tenantId, , exerciseId, taskId, fileName] = parts;
 
   try {
-    // 2. Generate SHA-256 Hash (Task 3 / M2)
+    // 2. Generate SHA-256 Hash (Task 3 / M2) - Streaming approach for scalability
     const bucket = admin.storage().bucket(bucketName);
     const file = bucket.file(filePath);
-    const [fileBuffer] = await file.download();
 
-    const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+    const hash = await new Promise<string>((resolve, reject) => {
+      const hashStream = crypto.createHash('sha256');
+      const readStream = file.createReadStream();
+
+      readStream.on('data', (chunk) => hashStream.update(chunk));
+      readStream.on('end', () => resolve(hashStream.digest('hex')));
+      readStream.on('error', (err) => reject(err));
+    });
+
     console.log(`Hash generated for ${fileName}: ${hash}`);
 
     // 3. Virus Scan Placeholder (Task 5 / M2)
