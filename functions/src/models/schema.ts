@@ -140,3 +140,38 @@ export interface SMSDocument {
   sentAt?: FieldValue | Date;
   retryCount?: number;
 }
+
+/**
+ * Phase 2: Asset Registry - Asset Collection Schema
+ * Collection: /assets/{assetId}
+ */
+export interface Asset {
+  assetId: string;
+  tenantId: string; // Critical for isolation
+  name: string;
+  type: 'system' | 'service' | 'infrastructure' | 'personnel';
+  criticality: 'critical' | 'high' | 'medium' | 'low';
+  description?: string;
+  ownerUid: string;
+  lastReviewedAt: FieldValue | Date;
+  status: 'active' | 'deprecated' | 'maintenance';
+  bia?: {
+    rto: number; // Recovery Time Objective (minutes)
+    rpo: number; // Recovery Point Objective (minutes)
+  };
+}
+
+/**
+ * Phase 2: Asset Registry - Vendor Collection Schema
+ * Collection: /vendors/{vendorId}
+ */
+export interface Vendor {
+  vendorId: string;
+  tenantId: string; // Critical for isolation
+  name: string;
+  category: 'cloud' | 'software' | 'hardware' | 'consulting' | 'other';
+  criticality: 'critical' | 'high' | 'medium' | 'low';
+  contactEmail: string;
+  slaMinutes?: number;
+  lastReviewedAt: FieldValue | Date;
+}

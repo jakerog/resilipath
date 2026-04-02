@@ -202,4 +202,63 @@ describe('Firestore Security Rules', () => {
       await assertSucceeds(userDb.collection('email_templates').doc('task_ready').get());
     });
   });
+
+  // 5. Asset Registry Security (2.1)
+  describe('Asset Registry Security', () => {
+    it('should allow Report role to read same-tenant assets', async () => {
+      const reportDb = testEnv.authenticatedContext('report-user', {
+        tenantId: 'tenant-a',
+        role: 'Report',
+      }).firestore();
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('assets').doc('asset-1').set({
+          tenantId: 'tenant-a',
+          name: 'Core Database',
+        });
+      });
+
+      await assertSucceeds(reportDb.collection('assets').doc('asset-1').get());
+    });
+
+    it('should prevent cross-tenant asset access', async () => {
+      const aliceDb = testEnv.authenticatedContext('alice', {
+        tenantId: 'tenant-a',
+        role: 'Admin',
+      }).firestore();
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('assets').doc('asset-b').set({
+          tenantId: 'tenant-b',
+          name: 'Tenant B System',
+        });
+      });
+
+      await assertFails(aliceDb.collection('assets').doc('asset-b').get());
+    });
+
+    it('should allow Moderator to create assets for their tenant', async () => {
+      const modDb = testEnv.authenticatedContext('mod-user', {
+        tenantId: 'tenant-a',
+        role: 'Moderator',
+      }).firestore();
+
+      await assertSucceeds(modDb.collection('assets').doc('new-asset').set({
+        tenantId: 'tenant-a',
+        name: 'Web Server',
+      }));
+    });
+
+    it('should prevent User role from creating assets', async () => {
+      const userDb = testEnv.authenticatedContext('user-user', {
+        tenantId: 'tenant-a',
+        role: 'User',
+      }).firestore();
+
+      await assertFails(userDb.collection('assets').doc('illegal-asset').set({
+        tenantId: 'tenant-a',
+        name: 'Illegal Asset',
+      }));
+    });
+  });
 });

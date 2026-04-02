@@ -115,9 +115,25 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------
+    // Asset Registry (Phase 2 / M1)
+    // ---------------------------------------------------------
+    match /assets/{assetId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    match /vendors/{vendorId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    // ---------------------------------------------------------
     // Future Placeholders (M13)
     // ---------------------------------------------------------
     match /bcp_plans/{docId} { allow read, write: if isGlobalSuperUser(); }
-    match /vendor_risk/{docId} { allow read, write: if isGlobalSuperUser(); }
   }
 }
