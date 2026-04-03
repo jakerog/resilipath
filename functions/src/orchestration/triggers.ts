@@ -93,7 +93,8 @@ async function processTaskReadiness(
 ): Promise<void> {
   if (tasks.length === 0) return;
 
-  const MAX_BATCH_SIZE = 450; // Leave buffer for mail documents
+  // Max 500 ops per batch. Each task update + mail document = 2 ops.
+  const MAX_BATCH_SIZE = 200;
   const chunk = tasks.slice(0, MAX_BATCH_SIZE);
   const remaining = tasks.slice(MAX_BATCH_SIZE);
 
