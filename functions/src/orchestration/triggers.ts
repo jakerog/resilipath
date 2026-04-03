@@ -40,6 +40,15 @@ export const onTaskUpdated = functions.runWith({
     return;
   }
 
+  // Task 4: Dispatch outbound webhook for successful completion or skip
+  const eventName = afterData.status === 'completed' ? 'task.completed' : 'task.skipped';
+  await dispatchOutboundWebhooks(afterData.tenantId, eventName, {
+    taskId: context.params.taskId,
+    exerciseId: afterData.exerciseId,
+    title: afterData.title,
+    status: afterData.status
+  });
+
   const exerciseId = afterData.exerciseId;
   const tenantId = afterData.tenantId;
   const db = admin.firestore();
