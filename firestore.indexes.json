@@ -33,6 +33,16 @@
         { "fieldPath": "tenantId", "order": "ASCENDING" },
         { "fieldPath": "name", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "webhook_configs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tenantId", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "active", "order": "ASCENDING" },
+        { "fieldPath": "events", "order": "ARRAY_CONTAINS" }
+      ]
     }
   ],
   "fieldOverrides": []
