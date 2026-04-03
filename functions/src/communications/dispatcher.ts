@@ -60,27 +60,38 @@ export async function dispatchSMS(
 
 /**
  * Batch Notification Dispatcher
- * Task 7: Batch status-based notifications to stay within Free Tier limits.
+ * Task 6 Optimization: Supports >500 documents via recursive chunking.
  */
 export async function dispatchBatchNotifications(
   notifications: { type: 'email' | 'sms' | 'voice'; data: any }[],
   db: admin.firestore.Firestore = admin.firestore()
-) {
+): Promise<void> {
   if (notifications.length === 0) return;
 
-  const batch = db.batch();
+  const MAX_BATCH_SIZE = 500;
   const timestamp = admin.firestore.FieldValue.serverTimestamp();
 
+  // If we exceed Firestore's 500-op limit, chunk and recurse
+  if (notifications.length > MAX_BATCH_SIZE) {
+    const chunk = notifications.slice(0, MAX_BATCH_SIZE);
+    const remaining = notifications.slice(MAX_BATCH_SIZE);
+
+    await dispatchBatchNotifications(chunk, db);
+    await dispatchBatchNotifications(remaining, db);
+    return;
+  }
+
+  const batch = db.batch();
+
   for (const notification of notifications) {
+    const data = { ...notification.data, createdAt: timestamp };
+
     if (notification.type === 'email') {
-      const ref = db.collection('mail').doc();
-      batch.set(ref, { ...notification.data, createdAt: timestamp });
+      batch.set(db.collection('mail').doc(), data);
     } else if (notification.type === 'sms') {
-      const ref = db.collection('sms').doc();
-      batch.set(ref, { ...notification.data, createdAt: timestamp });
+      batch.set(db.collection('sms').doc(), data);
     } else if (notification.type === 'voice') {
-      const ref = db.collection('voice').doc();
-      batch.set(ref, { ...notification.data, createdAt: timestamp, status: 'pending' });
+      batch.set(db.collection('voice').doc(), { ...data, status: 'pending' });
     }
   }
 

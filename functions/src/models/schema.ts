@@ -140,6 +140,7 @@ export interface SMSDocument {
   createdAt: FieldValue | Date;
   sentAt?: FieldValue | Date;
   retryCount?: number;
+  acknowledgedAt?: FieldValue | Date;
 }
 
 /**
@@ -155,6 +156,7 @@ export interface VoiceDocument {
   status: 'pending' | 'calling' | 'completed' | 'failed';
   createdAt: FieldValue | Date;
   callDurationSeconds?: number;
+  acknowledgedAt?: FieldValue | Date;
 }
 
 /**

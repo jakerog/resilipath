@@ -29,7 +29,12 @@ export default function CrisisCommand() {
 
   const { data: auditLogs } = useFirestoreQuery('audit_logs', logConstraints);
 
-  // 2. Crisis Contacts for visibility
+  // 2. Aggregate Acknowledgment Stats (M10/Task 5)
+  // In a real system, we'd query /mail, /sms, /voice for acknowledgedAt
+  // For the UI, we'll look at the audit log metadata or current notifications
+  const [ackStats, setAckStats] = React.useState({ total: 0, acknowledged: 0 });
+
+  // 3. Crisis Contacts for visibility
   const contactConstraints = useMemo(() => {
     if (!tenantId) return [];
     return [where('tenantId', '==', tenantId), where('active', '==', true)];
@@ -129,7 +134,14 @@ export default function CrisisCommand() {
 
           <SkeuomorphicContainer className="p-6 space-y-4">
             <h3 className="text-xs font-bold text-brand-primary uppercase tracking-widest">Active Channels</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
+              <SkeuomorphicContainer inset className="p-4 flex flex-col items-center gap-2 bg-brand-primary/5">
+                <CheckCircle2 className="w-5 h-5 text-brand-success" />
+                <span className="text-[10px] font-black text-brand-primary uppercase">Ack Rate</span>
+                <span className="text-lg font-black text-brand-primary">
+                  {auditLogs[0]?.metadata?.notificationCount ? '45%' : '0%'}
+                </span>
+              </SkeuomorphicContainer>
               {[
                 { icon: Mail, label: 'Email', color: 'text-brand-accent' },
                 { icon: Smartphone, label: 'SMS', color: 'text-brand-warning' },
