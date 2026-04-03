@@ -143,6 +143,35 @@ export interface SMSDocument {
 }
 
 /**
+ * Task 1: Communications - Voice Collection Schema
+ * Collection: /voice/{voiceId}
+ */
+export interface VoiceDocument {
+  to: string; // E.164 format
+  body: string; // Text to be converted to speech
+  tenantId: string; // Critical for isolation
+  exerciseId?: string;
+  taskId?: string;
+  status: 'pending' | 'calling' | 'completed' | 'failed';
+  createdAt: FieldValue | Date;
+  callDurationSeconds?: number;
+}
+
+/**
+ * Task 2: Crisis Contact List Schema
+ * Collection: /crisis_contacts/{contactId}
+ */
+export interface CrisisContact {
+  contactId: string;
+  tenantId: string;
+  name: string;
+  email: string;
+  phone: string;
+  priority: number; // Order in mass notification
+  active: boolean;
+}
+
+/**
  * Phase 2: Asset Registry - Asset Collection Schema
  * Collection: /assets/{assetId}
  */

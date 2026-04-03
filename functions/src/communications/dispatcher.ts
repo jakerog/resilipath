@@ -4,7 +4,24 @@
  */
 
 import * as admin from 'firebase-admin';
-import { MailDocument, SMSDocument } from '../models/schema';
+import { MailDocument, SMSDocument, VoiceDocument } from '../models/schema';
+
+/**
+ * Dispatch a voice notification.
+ */
+export async function dispatchVoice(
+  voice: Omit<VoiceDocument, 'createdAt'>,
+  db: admin.firestore.Firestore = admin.firestore()
+) {
+  const voiceRef = db.collection('voice').doc();
+  const voiceData: VoiceDocument = {
+    ...voice,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+
+  await voiceRef.set(voiceData);
+  return voiceRef.id;
+}
 
 /**
  * Dispatch an email notification via the 'Trigger Email' extension.
@@ -46,7 +63,7 @@ export async function dispatchSMS(
  * Task 7: Batch status-based notifications to stay within Free Tier limits.
  */
 export async function dispatchBatchNotifications(
-  notifications: { type: 'email' | 'sms'; data: any }[],
+  notifications: { type: 'email' | 'sms' | 'voice'; data: any }[],
   db: admin.firestore.Firestore = admin.firestore()
 ) {
   if (notifications.length === 0) return;
@@ -61,6 +78,9 @@ export async function dispatchBatchNotifications(
     } else if (notification.type === 'sms') {
       const ref = db.collection('sms').doc();
       batch.set(ref, { ...notification.data, createdAt: timestamp });
+    } else if (notification.type === 'voice') {
+      const ref = db.collection('voice').doc();
+      batch.set(ref, { ...notification.data, createdAt: timestamp, status: 'pending' });
     }
   }
 
