@@ -11,9 +11,19 @@ interface MapViewProps {
 }
 
 export const MapView: React.FC<MapViewProps> = ({ assets, className }) => {
-  // 1. Filter assets with location data
-  const mappedAssets = useMemo(() => {
-    return assets.filter(a => a.location?.lat && a.location?.lng);
+  // 1. Filter and Cluster assets with location data
+  const clusters = useMemo(() => {
+    const validAssets = assets.filter(a => a.location?.lat && a.location?.lng);
+    const groups: Record<string, any[]> = {};
+
+    validAssets.forEach(asset => {
+      // Simple coordinate-based clustering (approx 0.001 degree precision)
+      const key = `${asset.location.lat.toFixed(3)}_${asset.location.lng.toFixed(3)}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(asset);
+    });
+
+    return Object.values(groups);
   }, [assets]);
 
   // 2. Mock Map Implementation (Skeuomorphic Visualization)
@@ -36,7 +46,7 @@ export const MapView: React.FC<MapViewProps> = ({ assets, className }) => {
           </div>
 
           <div className="bg-white/80 backdrop-blur px-3 py-1.5 rounded-lg neumorphic-button pointer-events-auto text-[10px] font-bold text-brand-secondary">
-             {mappedAssets.length} Mapped Assets
+             {assets.filter(a => a.location?.lat).length} Mapped Assets
           </div>
         </header>
 
@@ -59,31 +69,58 @@ export const MapView: React.FC<MapViewProps> = ({ assets, className }) => {
         </footer>
       </div>
 
-      {/* Asset Pins (Mock Placement for Visualization) */}
+      {/* Asset Pins & Clusters (Mock Placement for Visualization) */}
       <div className="absolute inset-0 flex items-center justify-center">
-        {mappedAssets.length > 0 ? (
-          mappedAssets.map((asset, idx) => {
+        {clusters.length > 0 ? (
+          clusters.map((group, idx) => {
+            const asset = group[0];
+            const isCluster = group.length > 1;
+            const hasCritical = group.some(a => a.criticality === 'critical');
+
             // Convert lat/lng to stylized percentage positions (Simplified for mock)
-            // Normalizing -180..180 to 0..100%
             const left = ((asset.location.lng + 180) / 360) * 100;
             const top = (1 - (asset.location.lat + 90) / 180) * 100;
 
             return (
               <div
-                key={asset.id}
-                className="absolute transition-all duration-700 hover:scale-125 cursor-pointer group"
+                key={idx}
+                className="absolute transition-all duration-700 hover:scale-110 cursor-pointer group"
                 style={{ left: `${left}%`, top: `${top}%` }}
               >
                 <div className="relative">
-                  <MapPin className={clsx(
-                    "w-6 h-6 drop-shadow-lg",
-                    asset.criticality === 'critical' ? "text-brand-danger animate-pulse" : "text-brand-accent"
-                  )} />
+                  <div className="relative flex items-center justify-center">
+                    <MapPin className={clsx(
+                      "w-7 h-7 drop-shadow-xl",
+                      hasCritical ? "text-brand-danger animate-pulse" : "text-brand-accent"
+                    )} />
+                    {isCluster && (
+                      <div className="absolute -top-1 -right-1 bg-brand-primary text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#f4f7f6] neumorphic-button">
+                        {group.length}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Tooltip */}
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    <div className="bg-brand-primary text-white text-[9px] font-bold px-2 py-1 rounded shadow-xl">
-                      {asset.name} ({asset.criticality})
-                    </div>
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    <SkeuomorphicContainer className="p-2 min-w-[120px]">
+                      <p className="text-[10px] font-black text-brand-primary border-b border-brand-secondary/10 pb-1 mb-1 uppercase tracking-tighter">
+                        {isCluster ? `${group.length} Assets at Site` : asset.name}
+                      </p>
+                      <ul className="space-y-1">
+                        {group.slice(0, 3).map(a => (
+                          <li key={a.id} className="text-[8px] font-bold text-brand-secondary flex items-center gap-1">
+                            <div className={clsx(
+                              "w-1.5 h-1.5 rounded-full",
+                              a.criticality === 'critical' ? "bg-brand-danger" : "bg-brand-accent"
+                            )} />
+                            {a.name}
+                          </li>
+                        ))}
+                        {group.length > 3 && (
+                          <li className="text-[8px] italic text-brand-secondary/60">+{group.length - 3} more...</li>
+                        )}
+                      </ul>
+                    </SkeuomorphicContainer>
                   </div>
                 </div>
               </div>

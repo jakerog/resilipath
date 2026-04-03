@@ -1,3 +1,0 @@
-Navigation failed: Locator.click: Timeout 30000ms exceeded.
-Call log:
-  - waiting for get_by_role("button", name="Open Plan").first
