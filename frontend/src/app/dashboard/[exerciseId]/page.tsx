@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { TaskCard, TaskStatus } from '@/components/dashboard/TaskCard';
 import { AssetMapper } from '@/components/dashboard/AssetMapper';
 import { GanttChart } from '@/components/dashboard/GanttChart';
+import { MapView } from '@/components/dashboard/MapView';
 import { UserPresence } from '@/components/dashboard/UserPresence';
 import { EvidenceUpload } from '@/components/dashboard/EvidenceUpload';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
@@ -42,7 +43,16 @@ export default function ExerciseDashboard() {
   }, [tenantId, exerciseId]);
 
   const { data: tasks, loading: tasksLoading } = useFirestoreQuery('tasks', taskConstraints);
-  const loading = authLoading || exerciseLoading || tasksLoading;
+
+  // 3. Real-time Assets (Phase 2)
+  const assetConstraints = useMemo(() => {
+    if (!tenantId) return [];
+    return [where('tenantId', '==', tenantId)];
+  }, [tenantId]);
+
+  const { data: assets, loading: assetsLoading } = useFirestoreQuery('assets', assetConstraints);
+
+  const loading = authLoading || exerciseLoading || tasksLoading || assetsLoading;
 
   // 3. Asset Mapping (Phase 2)
   const handleToggleAsset = useCallback(async (taskId: string, assetId: string, currentAssetIds: string[] = []) => {
@@ -117,6 +127,8 @@ export default function ExerciseDashboard() {
         {/* Left Column: Task List & Metrics */}
         <div className="lg:col-span-8 space-y-8">
           <GanttChart tasks={sortedTasks} />
+
+          <MapView assets={assets} className="animate-in slide-in-from-left-4 duration-700" />
 
           <div className="grid md:grid-cols-2 gap-4">
             {sortedTasks.map((task: any) => (

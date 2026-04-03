@@ -160,6 +160,11 @@ export interface Asset {
     rto: number; // Recovery Time Objective (minutes)
     rpo: number; // Recovery Point Objective (minutes)
   };
+  location?: {
+    lat: number;
+    lng: number;
+    address?: string;
+  };
 }
 
 /**
