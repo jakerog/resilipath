@@ -66,12 +66,21 @@ export default function LoginPage() {
     if (!idpConfig) return;
     setLoading(true);
     try {
-      const provider = new OAuthProvider('saml.resilipath'); // Placeholder GCIP provider
-      // In a real implementation, we'd pass the tenantId to GCIP
+      /**
+       * SSO FLOW (ALPHA):
+       * 1. Identity discovery detected a SAML/OIDC provider for this domain.
+       * 2. We use the 'saml.resilipath' provider ID (configured in GCIP).
+       * 3. GCIP handles the redirect to the tenant's specific IdP (ssoUrl).
+       *
+       * Note: End-to-end IdP handshake requires a verified enterprise domain
+       * and GCIP project configuration. This remains in Alpha.
+       */
+      const provider = new OAuthProvider('saml.resilipath');
       await signInWithPopup(auth, provider);
       router.push('/dashboard');
     } catch (err: any) {
-      setError("SSO failed. Please contact your administrator.");
+      console.error('SSO Error:', err);
+      setError("Corporate login failed. Please contact your IT Resilience team.");
     } finally {
       setLoading(false);
     }

@@ -103,7 +103,33 @@ service cloud.firestore {
     match /sms/{smsId} {
       allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) || isGlobalSuperUser());
       allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
-      allow update, delete: if false; // Immutable (managed by system)
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedAt', 'updatedAt']));
+      allow delete: if false; // Immutable (managed by system)
+    }
+
+    match /voice/{voiceId} {
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) || isGlobalSuperUser());
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedAt', 'updatedAt', 'status', 'twilioSid', 'error']));
+      allow delete: if false; // Only manageable by service account
+    }
+
+    // ---------------------------------------------------------
+    // Crisis Communications (Phase 3)
+    // ---------------------------------------------------------
+    match /crisis_contacts/{contactId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    // ---------------------------------------------------------
+    // User Presence & Real-time (Phase 1/3)
+    // ---------------------------------------------------------
+    match /presence/{uid} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data);
+      allow write: if isAuthenticated() && (request.auth.uid == uid && belongsToTenant(request.resource.data));
     }
 
     // ---------------------------------------------------------

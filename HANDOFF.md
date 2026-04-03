@@ -1,47 +1,53 @@
-### 🚀 Hand-off: ResiliPath Implementation - Phase 1 Finalized & Phase 2 Kickoff
+### 🚀 Hand-off: ResiliPath Implementation - Phase 2 Finalized & Phase 3 Alpha
 
 **Context:**
-You are taking over the development of **ResiliPath**, a modular, isolated Resilience SaaS platform. We have successfully finalized **Phase 1: Resilience Exercise Execution Engine** and have officially kicked off **Phase 2: Multi-Tenant Resilience Planning & Lifecycle**. The project uses a serverless stack (GCP/Firebase and Vercel) optimized for free-tier scalability and strict tenant isolation.
+You are taking over the development of **ResiliPath**, a modular, isolated Resilience SaaS platform. We have successfully finalized **Phase 1** and **Phase 2**, and have completed the first half of **Phase 3: Crisis Communications & Hardening**.
 
 ---
 
-### **Completed Milestones (Phase 1 - 100% Complete)**
-The Resilience Exercise Execution Engine is fully functional. Key highlights include:
-*   **Infrastructure (1.1):** CI/CD pipelines via GitHub Actions are live for both Firebase and Vercel.
-*   **Identity (1.2):** Multi-tenant RBAC using Firebase Auth Custom Claims is implemented and enforced.
-*   **Data Layer (1.3):** Isolated Firestore schema and security rules are configured and unit-tested.
-*   **Evidence (1.4):** Isolated storage with automated SHA-256 hashing and immutability logic.
-*   **Orchestration (1.5):** DAG-based task engine with automated status propagation.
-*   **Communications (1.6):** Event-driven Email (Trigger Email Extension) and SMS dispatchers with standardized templates.
-*   **UI Foundation (1.7):** Next.js App Router scaffolded with a tactile, **skeuomorphic (neumorphic)** design system.
-*   **Execution Dashboard (1.8):** Real-time Firestore synchronization for task management, Gantt visualization, and live participant presence.
-*   **Compliance Reporting (1.9):** Serverless PDF generation engine using Puppeteer and Cloud Functions.
+### **Completed Milestones**
+
+#### **Phase 1: Resilience Exercise Engine (100% Complete)**
+- Real-time exercise orchestration with DAG-based task engine.
+- Automated status propagation and multi-tenant isolation.
+- Compliance reporting (PDF) and evidence collection.
+
+#### **Phase 2: Resilience Planning & Lifecycle (100% Complete)**
+- **Asset Registry (2.1):** Live inventory with GIS visualization and task mapping.
+- **Planning Engine (2.2):** Modular BCP templates and Guided Interview wizard.
+- **Offline Mode (2.3):** IndexedDB storage and PWA support for disconnected access.
+- **Governance (2.4):** Automated review cycles, audit logging, and approval workflows.
+- **Advanced Exports (2.5):** Multi-format DOCX/XLSX generation for portable BCPs.
+- **GIS View (2.6):** Tactile map visualization with asset clustering.
+
+#### **Phase 3: Crisis Communications & Hardening (50% Complete)**
+- **Crisis Comms Hub (3.1):** Multi-channel mass alerting (Email, SMS, Voice via Twilio) with skeuomorphic "Panic Button" UI. Supports recipient acknowledgment tracking and scalable recursive batching (>1,000 requests).
+- **Enterprise Auth (3.2):** **[Alpha]** Domain-based IdP discovery API, automated role mapping, and a hardened SSO login portal. Enterprise settings for SAML/OIDC configuration. Note: End-to-end IdP handshakes require verified GCIP project configuration.
 
 ---
 
-### **Current Mission: Phase 2 Kickoff**
-We have started **Sub-Phase 2.1: Asset Registry** (defined in `docs/phases/phase-2/2.1-assets.md`).
-*   **Data Models:** `Asset` and `Vendor` interfaces are defined in `functions/src/models/schema.ts`.
-*   **Security:** Isolated security rules for assets/vendors are live in `firestore.rules`.
-*   **Initial UI:** A foundational Registry list view is implemented in `frontend/src/app/assets/page.tsx`.
+### **Current Mission: Phase 3 Alpha Part II**
+We are now ready to commence **Sub-Phase 3.3: Webhook Engine**.
 
-**Your Next Immediate Task:**
-Implement the **Dependency Mapper** (Sub-Phase 2.1, Task 4) to allow tenants to link critical Assets directly to specific Resilience Exercise Tasks.
+**Your Next Immediate Tasks:**
+1.  **Initialize Webhook Engine (3.3):** Create `docs/phases/phase-3/3.3-webhooks.md` and define the schema for inbound/outbound webhooks.
+2.  **Inbound Orchestration:** Implement an HTTPS endpoint to allow external monitoring systems (e.g., Datadog, PagerDuty) to trigger Resilience Exercise tasks.
+3.  **Outbound Triggers:** Extend the `onTaskUpdated` trigger to dispatch outbound webhooks when critical tasks fail.
 
 ---
 
 ### **Operational Mandates**
-1.  **Documentation First:** You MUST keep all tasklists (`docs/phases/phase-2/*.md`), the Phase 2 Summary (`docs/phases/phase-2/summary.md`), and the project Journal (`docs/journal/`) updated as you complete each task.
-2.  **Continuous Deployment:** Commit your changes frequently to the remote branch. GitHub Actions will automatically validate and deploy your changes to the staging environment.
-3.  **Free-Tier Priority:** Maintain existing optimization patterns (256MB/60s Cloud Function limits for most tasks) to ensure the platform stays within free-tier quotas.
-4.  **Security & Isolation:** Every new collection or API must strictly enforce tenant isolation by validating `tenantId` in custom claims against document data via the `belongsToTenant()` rule helper.
+1.  **Skeuomorphic Consistency:** All new UI components MUST follow the project's **neumorphic** design system (see `frontend/src/components/layout/SkeuomorphicContainer.tsx`).
+2.  **Strict Isolation:** Every API and Firestore query must enforce `tenantId` boundaries using `request.auth.token.tenantId` in security rules and `where('tenantId', '==', tenantId)` in the frontend.
+3.  **Audit Everything:** All significant state changes (especially in Crisis Comms and Auth) must be recorded in the append-only `audit_logs` collection.
+4.  **Free-Tier Priority:** Maintain existing 256MB/60s Cloud Function defaults unless document processing (512MB/120s) is required.
 
 ---
 
 ### **Infrastructure Automation Summary**
-*   **Firebase CI:** Automated build and deployment of Functions, Rules, and Indexes on every push via `.github/workflows/firebase-deploy.yml`.
-*   **Vercel CI:** Automated edge deployments for the Next.js frontend via `.github/workflows/vercel-deploy.yml`.
-*   **Manual Provisioning:** Use `npm run provision-tenant` for bootstrapping new isolated tenants and administrators.
-*   **Template Seeding:** Use `npm run seed-templates` to populate the notification engine's email templates.
+- **Firebase CI/CD:** Functions, Rules, and Indexes deploy via `.github/workflows/firebase-deploy.yml`.
+- **Vercel CI/CD:** Frontend deploys automatically on every push to the staging/main branches.
+- **Notification Engine:** Unified dispatcher (`functions/src/communications/dispatcher.ts`) handles batching and channel-specific logic.
+- **Tenant Provisioning:** Use `npm run provision-tenant` to bootstrap isolated enterprise environments.
 
-Please review the **Phase 1 Summary** and **ADRs** to understand the architectural foundation before proceeding with Phase 2.
+Please review the **Phase 2 & 3 Summaries** and the **Project Journal** for detailed implementation history.
