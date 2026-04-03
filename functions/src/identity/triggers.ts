@@ -17,36 +17,57 @@ export const onUserCreated = functions.runWith({
 }).auth.user().onCreate(async (user) => {
   const { uid, email } = user;
 
-  // Default to a 'pending' tenantId and 'User' role
-  // In a real-world scenario, this might check for invited emails or other metadata.
-  const defaultTenantId = 'pending';
-  const defaultRole = 'User';
+  // 1. Initial Defaults
+  let targetTenantId = 'pending';
+  let targetRole = 'User';
+  let targetTier = 'standard';
 
   try {
-    // Set custom claims for the user
+    const db = admin.firestore();
+
+    // 2. Automated IdP Role Mapping (Task 5)
+    if (email) {
+      const domain = email.split('@')[1].toLowerCase();
+      const tenantsSnapshot = await db.collection('tenants')
+        .where('authConfig.domainWhitelist', 'array-contains', domain)
+        .limit(1)
+        .get();
+
+      if (!tenantsSnapshot.empty) {
+        const tenant = tenantsSnapshot.docs[0].data();
+        targetTenantId = tenant.tenantId;
+        targetTier = tenant.tier || 'standard';
+
+        // Check for specific IdP attribute mapping if available
+        // Note: In a production GCIP environment, we'd use 'beforeUserSignedIn'
+        // to extract actual assertions. Here we apply domain-based auto-tenant.
+      }
+    }
+
+    // 3. Set custom claims for the user
     await admin.auth().setCustomUserClaims(uid, {
-      tenantId: defaultTenantId,
-      role: defaultRole,
-      tier: 'standard',
+      tenantId: targetTenantId,
+      role: targetRole,
+      tier: targetTier,
     });
 
-    // Log the event for auditability (Task 3 compliance)
+    // 4. Log the event for auditability (Task 3 compliance)
     const auditLog = {
       who: uid,
       email: email || 'N/A',
       what: 'USER_PROVISIONED',
       when: admin.firestore.FieldValue.serverTimestamp(),
-      tenantId: defaultTenantId,
+      tenantId: targetTenantId,
       metadata: {
-        initialRole: defaultRole,
-        initialTier: 'standard',
+        initialRole: targetRole,
+        initialTier: targetTier,
+        discoveryMethod: targetTenantId !== 'pending' ? 'DOMAIN_AUTO_DISCOVERY' : 'DEFAULT_PENDING'
       }
     };
 
-    // Note: Writing to the audit_log collection is essential for SOC 2 (M3).
-    await admin.firestore().collection('audit_logs').add(auditLog);
+    await db.collection('audit_logs').add(auditLog);
 
-    console.log(`User ${uid} provisioned with default claims: tenantId=${defaultTenantId}, role=${defaultRole}`);
+    console.log(`User ${uid} provisioned: tenantId=${targetTenantId}, role=${targetRole}`);
   } catch (error) {
     console.error(`Error provisioning user ${uid}:`, error);
   }

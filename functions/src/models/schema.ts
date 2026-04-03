@@ -22,6 +22,17 @@ export interface Tenant {
     logoUrl?: string;
     customDomain?: string;
   };
+  authConfig?: {
+    providerType: 'password' | 'saml' | 'oidc';
+    idpEntityId?: string;
+    ssoUrl?: string;
+    domainWhitelist?: string[];
+    enforceSso: boolean;
+    attributeMapping?: {
+      roleField?: string;
+      adminRoleValue?: string;
+    };
+  };
 }
 
 /**

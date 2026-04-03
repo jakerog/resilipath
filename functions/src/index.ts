@@ -14,6 +14,7 @@ admin.initializeApp();
 // Exported Functions
 export * from './identity/triggers';
 export * from './identity/api';
+export * from './identity/sso';
 export * from './evidence/triggers';
 export * from './orchestration/triggers';
 export * from './orchestration/api';
