@@ -12,7 +12,7 @@ import { GuidedInterview } from '@/components/planning/GuidedInterview';
 import { SyncStatus } from '@/components/layout/SyncStatus';
 import { SyncConflictModal } from '@/components/planning/SyncConflictModal';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock, ShieldCheck, Send } from 'lucide-react';
+import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock, ShieldCheck, Send, Download, Table } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function PlanEditor() {
@@ -54,8 +54,29 @@ export default function PlanEditor() {
 
   const [isSaving, setIsSaving] = React.useState(false);
   const [isSnapshotting, setIsSnapshotting] = React.useState(false);
+  const [isExporting, setIsExporting] = React.useState<string | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
+
+  const handleExport = async (format: 'docx' | 'xlsx') => {
+    if (!planId) return;
+    setIsExporting(format);
+    try {
+      const exportFunc = httpsCallable(functions, 'generatePlanExport');
+      const result = await exportFunc({ planId, format }) as any;
+
+      const { base64, filename } = result.data;
+      const link = document.createElement('a');
+      link.href = `data:application/octet-stream;base64,${base64}`;
+      link.download = filename;
+      link.click();
+      console.log(`${format.toUpperCase()} Export triggered`);
+    } catch (err) {
+      console.error('Export failed:', err);
+    } finally {
+      setIsExporting(null);
+    }
+  };
 
   const handleStatusChange = async (newStatus: string) => {
     if (!planId || !user) return;
@@ -212,6 +233,24 @@ export default function PlanEditor() {
               Approve Plan
             </button>
           )}
+
+          <button
+            onClick={() => handleExport('docx')}
+            disabled={isExporting !== null || !isOnline}
+            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
+          >
+            <Download className={clsx("w-4 h-4 text-brand-accent", isExporting === 'docx' && "animate-pulse")} />
+            DOCX
+          </button>
+
+          <button
+            onClick={() => handleExport('xlsx')}
+            disabled={isExporting !== null || !isOnline}
+            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
+          >
+            <Table className={clsx("w-4 h-4 text-brand-success", isExporting === 'xlsx' && "animate-pulse")} />
+            XLSX
+          </button>
 
           <button
             onClick={handleSnapshot}
