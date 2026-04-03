@@ -12,6 +12,7 @@ import * as admin from 'firebase-admin';
 export const discoverIdentityProvider = functions.runWith({
   memory: '256MB',
   timeoutSeconds: 60,
+  minInstances: 1, // Mitigate cold starts for login flow
 }).https.onCall(async (data, context) => {
   const { email } = data;
   if (!email || !email.includes('@')) {

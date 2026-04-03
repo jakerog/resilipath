@@ -43,6 +43,38 @@
         { "fieldPath": "active", "order": "ASCENDING" },
         { "fieldPath": "events", "order": "ARRAY_CONTAINS" }
       ]
+    },
+    {
+      "collectionGroup": "presence",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "exerciseId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "plans",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tenantId", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "plan_snapshots",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "originalPlanId", "order": "ASCENDING" },
+        { "fieldPath": "snapshottedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "crisis_contacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tenantId", "order": "ASCENDING" },
+        { "fieldPath": "active", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

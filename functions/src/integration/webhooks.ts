@@ -15,6 +15,7 @@ import { WebhookConfig, ExerciseTask, AuditLog } from '../models/schema';
 export const processInboundWebhook = functions.runWith({
   memory: '256MB',
   timeoutSeconds: 60,
+  minInstances: 1, // Mitigate cold starts for external integrations
 }).https.onRequest(async (req, res) => {
   // 1. Method Validation
   if (req.method !== 'POST') {
@@ -134,6 +135,7 @@ export async function dispatchOutboundWebhooks(
     // 2. Dispatch to each URL
     const results = await Promise.all(configsSnap.docs.map(async (doc) => {
       const config = doc.data() as WebhookConfig;
+      const configId = doc.id; // Use document ID
       if (!config.url) return null;
 
       // Task 5: Retry logic and delivery tracking
@@ -193,7 +195,7 @@ export async function dispatchOutboundWebhooks(
           tenantId: tenantId,
           moduleName: 'Integration',
           metadata: {
-            configId: config.configId,
+            configId,
             event,
             url: config.url,
             status,
@@ -202,7 +204,7 @@ export async function dispatchOutboundWebhooks(
         };
         await db.collection('audit_logs').add(auditLog);
 
-        return { configId: config.configId, status, statusCode, retryCount, error: lastError };
+        return { configId, status, statusCode, retryCount, error: lastError };
     }));
 
     return results;

@@ -26,7 +26,21 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  turbopack: {}
+  turbopack: {},
+  async headers() {
+    return [
+      {
+        // Cache static reference data and manifest for high performance
+        source: '/(manifest.json|favicon.ico|globe.svg)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=31536000',
+          },
+        ],
+      },
+    ];
+  },
 }
 
 module.exports = withPWA(nextConfig)

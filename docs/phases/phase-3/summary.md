@@ -28,7 +28,7 @@ Phase 3 is broken down into 5 discrete, logical domains.
 | [3.1 Crisis Comms](3.1-crisis-comms.md) | Notifications | [x] 100% | Mass notification workflows for active resilience incidents. |
 | [3.2 Enterprise Auth](3.2-sso.md) | Identity | [x] 100% | SAML/SSO integration via Firebase Auth / GCP Identity Platform. |
 | [3.3 Webhook Engine](3.3-webhooks.md) | Integration | [x] 100% | Inbound and outbound webhooks for automated orchestration. |
-| [3.4 Scale & Performance](3.4-performance.md) | Infrastructure | [ ] 0% | Query optimization and edge caching for global availability. |
+| [3.4 Scale & Performance](3.4-performance.md) | Infrastructure | [x] 100% | Query optimization and edge caching for global availability. |
 | [3.5 Hardening Audit](3.5-audit.md) | Security | [ ] 0% | Pentest-driven security hardening and compliance validation. |
 
 ---

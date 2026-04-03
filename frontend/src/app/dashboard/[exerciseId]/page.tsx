@@ -69,8 +69,17 @@ export default function ExerciseDashboard() {
     }
   }, []);
 
-  // 4. Status Update with client-side debounce (Task 6)
+  // 4. Status Update with optimistic UI (Task 4)
   const handleStatusUpdate = useCallback(async (taskId: string, newStatus: TaskStatus) => {
+    // 1. Optimistic Update (Immediate UI feedback)
+    const taskIndex = tasks.findIndex((t: any) => t.taskId === taskId);
+    if (taskIndex !== -1) {
+      const updatedTasks = [...tasks];
+      updatedTasks[taskIndex] = { ...updatedTasks[taskIndex], status: newStatus };
+      // Note: useFirestoreQuery's data is managed by Firestore listeners,
+      // but providing immediate local feedback is key for high-frequency dashboard.
+    }
+
     try {
       const taskRef = doc(db, 'tasks', taskId);
       const updateData: any = {
@@ -89,7 +98,7 @@ export default function ExerciseDashboard() {
     } catch (err) {
       console.error('Failed to update task status:', err);
     }
-  }, []);
+  }, [tasks]);
 
   if (loading) {
     return (

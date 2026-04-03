@@ -14,8 +14,8 @@ export default function PlanGallery() {
   const router = useRouter();
   const { tenantId, user, loading: authLoading } = useAuth();
 
-  // 1. Fetch available templates (global)
-  const { data: templates, loading: templatesLoading } = useFirestoreQuery('bcp_templates');
+  // 1. Fetch available templates (global) - Optimized non-realtime
+  const { data: templates, loading: templatesLoading } = useFirestoreQuery('bcp_templates', [], { realtime: false });
 
   // 2. Fetch tenant plans
   const planConstraints = useMemo(() => {
