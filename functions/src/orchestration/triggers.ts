@@ -72,8 +72,12 @@ export const onTaskUpdated = functions.runWith({
       return;
     }
 
-    // 4. Recursive Batch Update (Mandate: Scalability > 500 documents)
-    await processTaskReadiness(tasksToUpdate, tenantId, exerciseId, db);
+    // 4. Get Exercise Name (once)
+    const exerciseSnap = await db.collection('exercises').doc(exerciseId).get();
+    const exerciseData = exerciseSnap.data() as Exercise;
+
+    // 5. Recursive Batch Update (Mandate: Scalability > 500 documents)
+    await processTaskReadiness(tasksToUpdate, tenantId, exerciseId, exerciseData.name, db);
     console.log(`Processed readiness for ${tasksToUpdate.length} tasks in exercise ${exerciseId}`);
 
   } catch (error) {
@@ -89,6 +93,7 @@ async function processTaskReadiness(
   tasks: ExerciseTask[],
   tenantId: string,
   exerciseId: string,
+  exerciseName: string,
   db: admin.firestore.Firestore
 ): Promise<void> {
   if (tasks.length === 0) return;
@@ -101,9 +106,20 @@ async function processTaskReadiness(
   const batch = db.batch();
   const timestamp = admin.firestore.FieldValue.serverTimestamp();
 
-  // Get exercise data for mail template (once per batch)
-  const exerciseSnap = await db.collection('exercises').doc(exerciseId).get();
-  const exerciseData = exerciseSnap.data() as Exercise;
+  // Pre-fetch all user emails in the chunk to optimize performance
+  const assignedUids = Array.from(new Set(chunk.map(t => t.assignedToUid).filter(uid => !!uid))) as string[];
+  const userMap: Record<string, string> = {};
+
+  if (assignedUids.length > 0) {
+    await Promise.all(assignedUids.map(async (uid) => {
+      try {
+        const user = await admin.auth().getUser(uid);
+        if (user.email) userMap[uid] = user.email;
+      } catch (err) {
+        console.error(`Error fetching user ${uid} in batch readiness:`, err);
+      }
+    }));
+  }
 
   for (const task of chunk) {
     const taskRef = db.collection('tasks').doc(task.taskId);
@@ -112,34 +128,27 @@ async function processTaskReadiness(
       updatedAt: timestamp
     });
 
-    if (task.assignedToUid) {
-      try {
-        const user = await admin.auth().getUser(task.assignedToUid);
-        if (user.email) {
-          batch.set(db.collection('mail').doc(), {
-            to: user.email,
-            template: {
-              name: 'task_ready',
-              data: {
-                exerciseName: exerciseData.name,
-                taskTitle: task.title,
-              }
-            },
-            tenantId: tenantId,
-            exerciseId: exerciseId,
-            taskId: task.taskId,
-            createdAt: timestamp,
-          });
-        }
-      } catch (err) {
-        console.error(`Failed to fetch user ${task.assignedToUid} for notification:`, err);
-      }
+    if (task.assignedToUid && userMap[task.assignedToUid]) {
+      batch.set(db.collection('mail').doc(), {
+        to: userMap[task.assignedToUid],
+        template: {
+          name: 'task_ready',
+          data: {
+            exerciseName,
+            taskTitle: task.title,
+          }
+        },
+        tenantId: tenantId,
+        exerciseId: exerciseId,
+        taskId: task.taskId,
+        createdAt: timestamp,
+      });
     }
   }
 
   await batch.commit();
 
   if (remaining.length > 0) {
-    await processTaskReadiness(remaining, tenantId, exerciseId, db);
+    await processTaskReadiness(remaining, tenantId, exerciseId, exerciseName, db);
   }
 }
