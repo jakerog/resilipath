@@ -260,8 +260,26 @@
 
 ---
 
+## M14: Continuous Documentation Audit [FINAL - LOCKED]
+
+**Priority:** HIGH
+**Rationale:** Documentation must accurately reflect the application's state to ensure compliance and maintainability.
+
+### Requirements
+- [x] All completed phases and sub-phases must be explicitly marked as complete in documentation.
+- [x] Tasklists must be updated in real-time as features are finalized.
+- [x] The project roadmap and summaries must reflect current progress.
+- [x] Mandate adherence must be verified during every phase transition.
+
+### Verification
+- [x] Quarterly audit of all project documentation.
+- [x] Pre-submission documentation review.
+
+---
+
 ## Document Control
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 4.0 | 2026-03-31 | Primary Agent | Refactored for GCP/Firebase/Vercel stack. |
+| 4.1 | 2026-04-03 | Jules | Added M14: Continuous Documentation Audit. |
