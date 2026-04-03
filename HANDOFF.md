@@ -20,19 +20,20 @@ You are taking over the development of **ResiliPath**, a modular, isolated Resil
 - **Advanced Exports (2.5):** Multi-format DOCX/XLSX generation for portable BCPs.
 - **GIS View (2.6):** Tactile map visualization with asset clustering.
 
-#### **Phase 3: Crisis Communications & Hardening (50% Complete)**
+#### **Phase 3: Crisis Communications & Hardening (75% Complete)**
 - **Crisis Comms Hub (3.1):** Multi-channel mass alerting (Email, SMS, Voice via Twilio) with skeuomorphic "Panic Button" UI. Supports recipient acknowledgment tracking and scalable recursive batching (>1,000 requests).
 - **Enterprise Auth (3.2):** **[Alpha]** Domain-based IdP discovery API, automated role mapping, and a hardened SSO login portal. Enterprise settings for SAML/OIDC configuration. Note: End-to-end IdP handshakes require verified GCIP project configuration.
+- **Webhook Engine (3.3):** Inbound HTTPS triggers for monitoring systems (e.g., Datadog) and outbound task failure notifications featuring 3-retry exponential backoff and 10s timeouts.
 
 ---
 
-### **Current Mission: Phase 3 Alpha Part II**
-We are now ready to commence **Sub-Phase 3.3: Webhook Engine**.
+### **Current Mission: Phase 3 Finalization**
+We are now ready to commence **Sub-Phase 3.4: Scale & Performance**.
 
 **Your Next Immediate Tasks:**
-1.  **Initialize Webhook Engine (3.3):** Create `docs/phases/phase-3/3.3-webhooks.md` and define the schema for inbound/outbound webhooks.
-2.  **Inbound Orchestration:** Implement an HTTPS endpoint to allow external monitoring systems (e.g., Datadog, PagerDuty) to trigger Resilience Exercise tasks.
-3.  **Outbound Triggers:** Extend the `onTaskUpdated` trigger to dispatch outbound webhooks when critical tasks fail.
+1.  **Initialize Scale & Performance (3.4):** Create `docs/phases/phase-3/3.4-performance.md` and define the scope for query optimization.
+2.  **Query Hardening:** Optimize Firestore composite indexes for high-density asset and exercise queries.
+3.  **Edge Cache Strategy:** Implement Vercel Edge Caching for static resilience reference data.
 
 ---
 
