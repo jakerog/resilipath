@@ -13,7 +13,8 @@ const {
 const fs = require('fs');
 const path = require('path');
 
-describe('Firestore Security Rules', () => {
+describe('Firestore Security Rules', function() {
+  this.timeout(10000); // Increase timeout for environment initialization
   let testEnv;
 
   before(async () => {

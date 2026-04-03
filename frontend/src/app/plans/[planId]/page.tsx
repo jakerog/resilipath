@@ -12,7 +12,7 @@ import { GuidedInterview } from '@/components/planning/GuidedInterview';
 import { SyncStatus } from '@/components/layout/SyncStatus';
 import { SyncConflictModal } from '@/components/planning/SyncConflictModal';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock } from 'lucide-react';
+import { ChevronLeft, FileText, CheckCircle, History, Camera, Clock, ShieldCheck, Send } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function PlanEditor() {
@@ -54,7 +54,26 @@ export default function PlanEditor() {
 
   const [isSaving, setIsSaving] = React.useState(false);
   const [isSnapshotting, setIsSnapshotting] = React.useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!planId || !user) return;
+    setIsUpdatingStatus(true);
+    try {
+      const planRef = doc(db, 'plans', planId);
+      await updateDoc(planRef, {
+        status: newStatus,
+        lastModifiedBy: user.uid,
+        updatedAt: serverTimestamp(),
+      });
+      console.log(`Plan status updated to ${newStatus}`);
+    } catch (err) {
+      console.error('Failed to update plan status:', err);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   const handleSnapshot = async () => {
     if (!planId) return;
@@ -150,6 +169,14 @@ export default function PlanEditor() {
                 <CheckCircle className="w-3 h-3" />
                 Auto-save active
               </div>
+              <span className={clsx(
+                "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter",
+                plan.status === 'approved' ? "bg-brand-success/10 text-brand-success" :
+                plan.status === 'under_review' ? "bg-brand-accent/10 text-brand-accent" :
+                "bg-brand-secondary/10 text-brand-secondary"
+              )}>
+                {plan.status || 'draft'}
+              </span>
             </div>
           </div>
         </div>
@@ -164,6 +191,28 @@ export default function PlanEditor() {
           >
             <History className="w-5 h-5" />
           </button>
+          {plan.status === 'draft' && (
+            <button
+              onClick={() => handleStatusChange('under_review')}
+              disabled={isUpdatingStatus || !isOnline}
+              className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
+            >
+              <Send className="w-4 h-4 text-brand-accent" />
+              Submit for Review
+            </button>
+          )}
+
+          {plan.status === 'under_review' && (
+            <button
+              onClick={() => handleStatusChange('approved')}
+              disabled={isUpdatingStatus || !isOnline}
+              className="neumorphic-button px-6 py-2 text-xs font-bold text-white bg-brand-success uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              Approve Plan
+            </button>
+          )}
+
           <button
             onClick={handleSnapshot}
             disabled={isSnapshotting || !isOnline}

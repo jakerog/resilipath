@@ -22,9 +22,25 @@ export const onPlanUpdated = functions.runWith({
     if (!before || !after) return null;
 
     const cycleChanged = before.reviewCycleDays !== after.reviewCycleDays;
-    const justApproved = before.status !== 'approved' && after.status === 'approved';
+    const statusChanged = before.status !== after.status;
+    const justApproved = statusChanged && after.status === 'approved';
 
-    // If review cycle needs recalculation
+    // 1. Audit Logging for status changes (Task 6)
+    if (statusChanged) {
+      await admin.firestore().collection('audit_logs').add({
+        who: after.lastModifiedBy || 'SYSTEM',
+        what: 'PLAN_STATUS_CHANGED',
+        when: admin.firestore.FieldValue.serverTimestamp(),
+        tenantId: after.tenantId,
+        metadata: {
+          planId: context.params.planId,
+          from: before.status,
+          to: after.status
+        }
+      });
+    }
+
+    // 2. If review cycle needs recalculation
     if (cycleChanged || justApproved) {
       const cycleDays = after.reviewCycleDays || 365; // Default to annual review
       const nextReviewDate = new Date();

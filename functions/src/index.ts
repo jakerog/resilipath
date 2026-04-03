@@ -22,3 +22,5 @@ export * from './reporting/api';
 export * from './assets/triggers';
 export * from './planning/api';
 export * from './planning/triggers';
+export * from './planning/reminders';
+export * from './planning/exports';
