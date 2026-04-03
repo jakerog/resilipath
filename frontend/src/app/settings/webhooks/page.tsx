@@ -198,7 +198,7 @@ export default function WebhookSettings() {
             <p className="text-xs text-brand-primary font-bold">Integration Tip</p>
             <p className="text-[10px] text-brand-secondary leading-relaxed">
               Inbound webhooks allow external tools to trigger tasks. Use the endpoint URL:
-              <code className="mx-1 p-1 bg-white rounded">https://resilipath.io/api/webhooks</code>
+              <code className="mx-1 p-1 bg-white rounded">https://[region]-[project].cloudfunctions.net/processInboundWebhook</code>
               with your Webhook ID and Secret in the payload.
             </p>
           </div>
