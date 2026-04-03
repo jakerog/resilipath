@@ -1,0 +1,195 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ---------------------------------------------------------
+    // Helper Functions
+    // ---------------------------------------------------------
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isGlobalSuperUser() {
+      return isAuthenticated() && request.auth.token.isGlobalSuperUser == true;
+    }
+
+    function getTenantId() {
+      return request.auth.token.tenantId;
+    }
+
+    function getRole() {
+      return request.auth.token.role;
+    }
+
+    function belongsToTenant(doc) {
+      return doc.tenantId == getTenantId();
+    }
+
+    function hasRole(role) {
+      return getRole() == role;
+    }
+
+    function isAdmin() {
+      return hasRole('Admin') || isGlobalSuperUser();
+    }
+
+    function isModerator() {
+      return hasRole('Moderator') || isAdmin();
+    }
+
+    function isUser() {
+      return hasRole('User') || isModerator();
+    }
+
+    function isReport() {
+      return hasRole('Report') || isUser();
+    }
+
+    // ---------------------------------------------------------
+    // Shared Reference Data (Task 7 / ADR-001)
+    // ---------------------------------------------------------
+    match /shared_reference/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isGlobalSuperUser();
+    }
+
+    // ---------------------------------------------------------
+    // Tenant Data (Task 1 / M1)
+    // ---------------------------------------------------------
+    match /tenants/{tenantId} {
+      allow read: if isAuthenticated() && (tenantId == getTenantId() || isGlobalSuperUser());
+      allow write: if isGlobalSuperUser();
+      allow update: if isAuthenticated() && (tenantId == getTenantId() && isAdmin());
+    }
+
+    // ---------------------------------------------------------
+    // Resilience Exercises (Task 2 / M6)
+    // ---------------------------------------------------------
+    match /exercises/{exerciseId} {
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isReport());
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) && isModerator());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator());
+      allow delete: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+    }
+
+    // ---------------------------------------------------------
+    // Exercise Tasks (Task 3 / M7 / M8)
+    // ---------------------------------------------------------
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isReport());
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) && isModerator());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isUser());
+      allow delete: if isAuthenticated() && (belongsToTenant(resource.data) && isModerator());
+    }
+
+    // ---------------------------------------------------------
+    // Audit Logs (Task 4 / M3) - Immutable and Append-only
+    // ---------------------------------------------------------
+    match /audit_logs/{logId} {
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) || isGlobalSuperUser());
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow update, delete: if false; // Immutable (append-only)
+    }
+
+    // ---------------------------------------------------------
+    // Communications - Mail & SMS (Task 2 / M1)
+    // ---------------------------------------------------------
+    match /mail/{mailId} {
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) || isGlobalSuperUser());
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow update, delete: if false; // Immutable (managed by extension)
+    }
+
+    match /sms/{smsId} {
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) || isGlobalSuperUser());
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedAt', 'updatedAt']));
+      allow delete: if false; // Immutable (managed by system)
+    }
+
+    match /voice/{voiceId} {
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) || isGlobalSuperUser());
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedAt', 'updatedAt', 'status', 'twilioSid', 'error']));
+      allow delete: if false; // Only manageable by service account
+    }
+
+    // ---------------------------------------------------------
+    // Crisis Communications (Phase 3)
+    // ---------------------------------------------------------
+    match /crisis_contacts/{contactId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    // ---------------------------------------------------------
+    // User Presence & Real-time (Phase 1/3)
+    // ---------------------------------------------------------
+    match /presence/{uid} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data);
+      allow write: if isAuthenticated() && (request.auth.uid == uid && belongsToTenant(request.resource.data));
+    }
+
+    // ---------------------------------------------------------
+    // Email Templates (Trigger Email Extension)
+    // ---------------------------------------------------------
+    match /email_templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isGlobalSuperUser();
+    }
+
+    // ---------------------------------------------------------
+    // Asset Registry (Phase 2 / M1)
+    // ---------------------------------------------------------
+    match /assets/{assetId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    match /plan_snapshots/{snapshotId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create, update, delete: if false; // Only created via Service Account (snapshotPlan API)
+    }
+
+    match /vendors/{vendorId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    // ---------------------------------------------------------
+    // Planning Engine (Phase 2 / M2)
+    // ---------------------------------------------------------
+    match /bcp_templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isGlobalSuperUser();
+    }
+
+    match /plans/{planId} {
+      allow read: if isAuthenticated() && belongsToTenant(resource.data) && isReport();
+      allow create: if isAuthenticated() && belongsToTenant(request.resource.data) && isModerator();
+      allow update: if isAuthenticated() && belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isModerator();
+      allow delete: if isAuthenticated() && belongsToTenant(resource.data) && isAdmin();
+    }
+
+    // ---------------------------------------------------------
+    // Webhook Engine (Phase 3)
+    // ---------------------------------------------------------
+    match /webhook_configs/{configId} {
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) && isAdmin());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isAdmin());
+      allow delete: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+    }
+
+    // ---------------------------------------------------------
+    // Future Placeholders (M13)
+    // ---------------------------------------------------------
+    match /bcp_plans_legacy/{docId} { allow read, write: if isGlobalSuperUser(); }
+  }
+}

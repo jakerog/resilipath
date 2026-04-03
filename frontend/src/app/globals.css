@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #2c3e50;
+  --color-brand-secondary: #34495e;
+  --color-brand-accent: #3498db;
+  --color-brand-success: #27ae60;
+  --color-brand-danger: #e74c3c;
+  --color-brand-warning: #f39c12;
+}
+
+:root {
+  --background: #f4f7f6;
+  --foreground: #2c3e50;
+
+  /* Skeuomorphic Base Colors */
+  --panel-bg: #e0e5ec;
+  --panel-shadow-light: #ffffff;
+  --panel-shadow-dark: #a3b1c6;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Skeuomorphic Utility Classes */
+@layer components {
+  .neumorphic {
+    background: var(--panel-bg);
+    border-radius: 12px;
+    box-shadow: 6px 6px 12px var(--panel-shadow-dark),
+                -6px -6px 12px var(--panel-shadow-light);
+  }
+
+  .neumorphic-inset {
+    background: var(--panel-bg);
+    border-radius: 12px;
+    box-shadow: inset 6px 6px 12px var(--panel-shadow-dark),
+                inset -6px -6px 12px var(--panel-shadow-light);
+  }
+
+  .neumorphic-button {
+    background: var(--panel-bg);
+    border-radius: 8px;
+    box-shadow: 4px 4px 8px var(--panel-shadow-dark),
+                -4px -4px 8px var(--panel-shadow-light);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .neumorphic-button:active {
+    box-shadow: inset 4px 4px 8px var(--panel-shadow-dark),
+                inset -4px -4px 8px var(--panel-shadow-light);
+  }
+}

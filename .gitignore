@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+.DS_Store
+
+# Firebase
+.firebase/
+functions/lib/
+functions/node_modules/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Next.js
+.next/
+out/
+
+# Environment Variables
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

@@ -1,0 +1,58 @@
+(node:421011) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+⚠  emulators: You are not currently authenticated so some features may not work correctly. Please run firebase login to authenticate the CLI.
+i  emulators: Starting emulators: firestore
+i  firestore: Firestore Emulator logging to firestore-debug.log
+✔  firestore: Firestore Emulator UI websocket is running on 9150.
+i  Running script: cd functions && npm test
+
+> test
+> mocha test/**/*.spec.js
+
+
+
+  Firestore Security Rules
+    Tenant Isolation
+      ✔ should prevent cross-tenant data access (687ms)
+      ✔ should allow access to same-tenant data (169ms)
+    Role-Based Access Control
+      ✔ should allow Admin to delete exercises (103ms)
+[2026-04-03T13:56:26.528Z]  @firebase/firestore: Firestore (12.11.0): GrpcConnection RPC 'Write' stream 0x45611cb8 error. Code: 7 Message: 7 PERMISSION_DENIED:
+evaluation error at L72:24 for 'delete' @ L72, Property isGlobalSuperUser is undefined on object. for 'delete' @ L72
+      ✔ should prevent User from deleting exercises (113ms)
+    Audit Log Immutability
+[2026-04-03T13:56:26.655Z]  @firebase/firestore: Firestore (12.11.0): GrpcConnection RPC 'Write' stream 0x45611cba error. Code: 7 Message: 7 PERMISSION_DENIED:
+false for 'update' @ L91
+      ✔ should prevent updating audit logs (110ms)
+    Communications Module Security
+      ✔ should allow Admin to read same-tenant mail (105ms)
+      ✔ should prevent Admin from reading cross-tenant mail (83ms)
+      ✔ should allow users to create mail for their own tenant (67ms)
+[2026-04-03T13:56:27.033Z]  @firebase/firestore: Firestore (12.11.0): GrpcConnection RPC 'Write' stream 0x45611cc0 error. Code: 7 Message: 7 PERMISSION_DENIED:
+Property isGlobalSuperUser is undefined on object. for 'create' @ L98, false for 'update' @ L100, Property isGlobalSuperUser is undefined on object. for 'create' @ L98
+      ✔ should prevent users from creating mail for other tenants (56ms)
+      ✔ should allow read access to email templates for authenticated users (78ms)
+    Asset Registry Security
+      ✔ should allow Report role to read same-tenant assets (77ms)
+      ✔ should prevent cross-tenant asset access (73ms)
+      ✔ should allow Moderator to create assets for their tenant (46ms)
+[2026-04-03T13:56:27.438Z]  @firebase/firestore: Firestore (12.11.0): GrpcConnection RPC 'Write' stream 0x45611cc8 error. Code: 7 Message: 7 PERMISSION_DENIED:
+Property isGlobalSuperUser is undefined on object. for 'create' @ L148, evaluation error at L149:24 for 'update' @ L149, Property isGlobalSuperUser is undefined on object. for 'create' @ L148
+      ✔ should prevent User role from creating assets (58ms)
+    Webhook Engine Security
+      ✔ should allow Admin to read same-tenant webhook configs (75ms)
+      ✔ should prevent cross-tenant webhook config access (67ms)
+      ✔ should prevent non-Admin from reading webhook configs (70ms)
+      ✔ should allow Admin to create webhook configs for their tenant (43ms)
+[2026-04-03T13:56:27.793Z]  @firebase/firestore: Firestore (12.11.0): GrpcConnection RPC 'Write' stream 0x45611cd0 error. Code: 7 Message: 7 PERMISSION_DENIED:
+false for 'create' @ L185, false for 'update' @ L186
+      ✔ should prevent Admin from creating webhook configs for other tenants (38ms)
+
+
+  19 passing (4s)
+
+✔  Script exited successfully (code 0)
+i  emulators: Shutting down emulators.
+i  firestore: Stopping Firestore Emulator
+i  hub: Stopping emulator hub
+i  logging: Stopping Logging Emulator
