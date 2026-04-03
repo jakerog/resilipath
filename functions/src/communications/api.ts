@@ -5,6 +5,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { dispatchBatchNotifications } from './dispatcher';
+import { maskSensitiveData } from '../utils/security';
 
 /**
  * Task 3: triggerPanicButton HTTPS Callable
@@ -93,11 +94,11 @@ export const triggerPanicButton = functions.runWith({
       what: 'CRISIS_PANIC_BUTTON_TRIGGERED',
       when: admin.firestore.FieldValue.serverTimestamp(),
       tenantId,
-      metadata: {
+      metadata: maskSensitiveData({
         message,
         contactCount: contactsSnapshot.size,
         notificationCount: notifications.length
-      },
+      }),
     });
 
     return {

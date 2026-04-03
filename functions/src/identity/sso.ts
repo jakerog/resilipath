@@ -4,6 +4,7 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { checkRateLimit } from '../utils/security';
 
 /**
  * Task 4: discoverIdentityProvider HTTPS Callable
@@ -14,6 +15,13 @@ export const discoverIdentityProvider = functions.runWith({
   timeoutSeconds: 60,
   minInstances: 1, // Mitigate cold starts for login flow
 }).https.onCall(async (data, context) => {
+  // 1. Brute Force Protection (Task 1)
+  const ip = context.rawRequest.ip || 'anonymous';
+  const isAllowed = await checkRateLimit(`discovery_${ip}`, 5, 60);
+  if (!isAllowed) {
+    throw new functions.https.HttpsError('resource-exhausted', 'Too many discovery attempts. Please try again in a minute.');
+  }
+
   const { email } = data;
   if (!email || !email.includes('@')) {
     throw new functions.https.HttpsError('invalid-argument', 'Valid email is required for IdP discovery.');

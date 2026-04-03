@@ -6,6 +6,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { WebhookConfig, ExerciseTask, AuditLog } from '../models/schema';
+import { checkRateLimit, maskSensitiveData } from '../utils/security';
 
 /**
  * Task 2: processInboundWebhook HTTPS Request Trigger
@@ -17,7 +18,15 @@ export const processInboundWebhook = functions.runWith({
   timeoutSeconds: 60,
   minInstances: 1, // Mitigate cold starts for external integrations
 }).https.onRequest(async (req, res) => {
-  // 1. Method Validation
+  // 1. Rate Limiting (Task 1)
+  const ip = req.ip || 'anonymous';
+  const isAllowed = await checkRateLimit(`webhook_${ip}`, 10, 60);
+  if (!isAllowed) {
+    res.status(429).send('Too many requests');
+    return;
+  }
+
+  // 2. Method Validation
   if (req.method !== 'POST') {
     res.status(405).send('Method Not Allowed');
     return;
@@ -78,19 +87,19 @@ export const processInboundWebhook = functions.runWith({
       }
     });
 
-    // 5. Log the event to audit_logs (Task 6)
+    // 5. Log the event to audit_logs (Task 3 & 6)
     const auditLog: AuditLog = {
       who: `WEBHOOK_${configId}`,
       what: 'INBOUND_WEBHOOK_TRIGGERED',
       when: admin.firestore.FieldValue.serverTimestamp(),
       tenantId: tenantId,
       moduleName: 'Integration',
-      metadata: {
+      metadata: maskSensitiveData({
         configId,
         taskId,
         status: newStatus,
         externalMetadata: metadata || {}
-      }
+      })
     };
 
     await db.collection('audit_logs').add(auditLog);
@@ -187,20 +196,21 @@ export async function dispatchOutboundWebhooks(
 
       const status = success ? 'SUCCESS' : 'ERROR';
 
-        // 3. Log the outbound event (Task 6)
+        // 3. Log the outbound event (Task 3 & 6)
         const auditLog: AuditLog = {
           who: 'SYSTEM_WEBHOOK_DISPATCHER',
           what: 'OUTBOUND_WEBHOOK_DISPATCHED',
           when: admin.firestore.FieldValue.serverTimestamp(),
           tenantId: tenantId,
           moduleName: 'Integration',
-          metadata: {
+          metadata: maskSensitiveData({
             configId,
             event,
             url: config.url,
             status,
-            statusCode
-          }
+            statusCode,
+            retryCount
+          })
         };
         await db.collection('audit_logs').add(auditLog);
 

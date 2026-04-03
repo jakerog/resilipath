@@ -188,6 +188,13 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------
+    // Rate Limiting (Phase 3.5)
+    // ---------------------------------------------------------
+    match /rate_limits/{limitId} {
+      allow read, write: if false; // System-only access via Service Account
+    }
+
+    // ---------------------------------------------------------
     // Future Placeholders (M13)
     // ---------------------------------------------------------
     match /bcp_plans_legacy/{docId} { allow read, write: if isGlobalSuperUser(); }
