@@ -23,12 +23,12 @@ Phase 4 transitions ResiliPath from a tactical execution and planning tool into 
 
 Phase 4 is broken down into 4 discrete, logical domains.
 
-| Sub-Phase | Logical Domain | Primary Concern |
-|-----------|----------------|-----------------|
-| [4.1 Vendor Risk](4.1-vendor-risk.md) | Third-Party | Automated assessments and SLA monitoring for critical vendors. |
-| [4.2 ML Scoring](4.2-ml-analytics.md) | Intelligence | Predictive resilience scores based on exercise history and plan depth. |
-| [4.3 Compliance Auto](4.3-compliance.md) | Audit | Automated control mapping and audit-ready evidence packages. |
-| [4.4 Partner API](4.4-partner-api.md) | Connectivity | Secure external API for ServiceNow/Azure ASR/AWS DRS integration. |
+| Sub-Phase | Logical Domain | Status | Primary Concern |
+|-----------|----------------|--------|-----------------|
+| [4.1 Vendor Risk](4.1-vendor-risk.md) | Third-Party | [x] 100% | Automated assessments and SLA monitoring for critical vendors. |
+| [4.2 ML Scoring](4.2-ml-analytics.md) | Intelligence | [x] 100% | Predictive resilience scores based on exercise history and plan depth. |
+| [4.3 Compliance Auto](4.3-compliance.md) | Audit | [x] 100% | Automated control mapping and audit-ready evidence packages. |
+| [4.4 Partner API](4.4-partner-api.md) | Connectivity | [x] 100% | Secure external API for ServiceNow/Azure ASR/AWS DRS integration. |
 
 ---
 

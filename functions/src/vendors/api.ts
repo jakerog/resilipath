@@ -167,11 +167,33 @@ export const submitVendorResponse = functions.runWith({
 
       // 2. Update Vendor Risk Score
       const vendorRef = db.collection('vendors').doc(assessment.vendorId);
+      const vendorSnap = await transaction.get(vendorRef);
+      const vendorData = vendorSnap.data() as Vendor;
+
       transaction.update(vendorRef, {
         riskScore: Math.min(score, 100),
         complianceStatus: score > 70 ? 'compliant' : 'non-compliant',
         lastReviewedAt: admin.firestore.FieldValue.serverTimestamp()
       });
+
+      // Task 4: SLA Breach Alerting
+      if (vendorData.slaMinutes && score < 50) {
+         // Logic: If vendor fails assessment and has an active SLA, trigger alert
+         const alertLog: AuditLog = {
+           who: 'SYSTEM_MONITOR',
+           what: 'VENDOR_SLA_RISK_ALERT',
+           when: admin.firestore.FieldValue.serverTimestamp(),
+           tenantId: assessment.tenantId,
+           moduleName: 'VendorRisk',
+           metadata: {
+             vendorId: assessment.vendorId,
+             vendorName: vendorData.name,
+             sla: vendorData.slaMinutes,
+             reason: 'Critical assessment failure'
+           }
+         };
+         transaction.set(db.collection('audit_logs').doc(), alertLog);
+      }
 
       // 3. Audit Log
       const auditLog: AuditLog = {

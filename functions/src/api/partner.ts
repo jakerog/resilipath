@@ -55,6 +55,26 @@ export const partnerApiV1 = functions.runWith({
       return;
     }
 
+    // Task 5: Azure/AWS Metadata Ingestion (POST)
+    if (path === '/sync/metadata' && method === 'POST') {
+      const { source, metadata } = req.body;
+      if (!source || !metadata) {
+        res.status(400).send('Missing source or metadata');
+        return;
+      }
+
+      await db.collection('audit_logs').add({
+        who: 'PARTNER_API',
+        what: 'INFRASTRUCTURE_METADATA_SYNCED',
+        when: admin.firestore.FieldValue.serverTimestamp(),
+        tenantId,
+        metadata: { source, metadataSize: JSON.stringify(metadata).length }
+      });
+
+      res.status(200).send({ message: 'Metadata synced successfully' });
+      return;
+    }
+
     res.status(404).send('Endpoint not found');
 
   } catch (error: any) {
