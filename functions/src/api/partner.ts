@@ -24,9 +24,11 @@ export const partnerApiV1 = functions.runWith({
     return;
   }
 
-  // 2. Authentication (Simplified for MVP/Foundation)
-  if (!apiKey || apiKey !== 'mock-partner-key') { // In production, validate against /api_keys collection
-    res.status(401).send('Unauthorized: Invalid API Key');
+  // 2. Authentication (Production Integration)
+  // Fetch from the /api_keys collection to validate against registered enterprise partners
+  const apiKeySnap = await db.collection('api_keys').doc(apiKey || 'none').get();
+  if (!apiKeySnap.exists || !apiKeySnap.data()?.active) {
+    res.status(401).send('Unauthorized: Invalid or inactive API Key');
     return;
   }
 

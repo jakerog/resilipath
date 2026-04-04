@@ -63,9 +63,11 @@ export const onTaskUpdated = functions.runWith({
     const allTasks = taskSnapshot.docs.map(doc => doc.data() as ExerciseTask);
 
     // 2. Identify downstream tasks (those that depend on the completed task)
+    // Optimization: Also check !isReady to prevent duplicate notifications on retry (M14)
     const downstreamTasks = allTasks.filter(task =>
       task.dependsOn?.includes(context.params.taskId) &&
-      task.status === 'pending'
+      task.status === 'pending' &&
+      !task.isReady
     );
 
     if (downstreamTasks.length === 0) {

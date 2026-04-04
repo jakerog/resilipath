@@ -196,7 +196,7 @@ export async function dispatchOutboundWebhooks(
 
       const status = success ? 'SUCCESS' : 'ERROR';
 
-        // 3. Log the outbound event (Task 3 & 6)
+        // 3. Prepare Audit Log (Task 3 & 6)
         const auditLog: AuditLog = {
           who: 'SYSTEM_WEBHOOK_DISPATCHER',
           what: 'OUTBOUND_WEBHOOK_DISPATCHED',
@@ -212,15 +212,48 @@ export async function dispatchOutboundWebhooks(
             retryCount
           })
         };
-        await db.collection('audit_logs').add(auditLog);
 
-        return { configId, status, statusCode, retryCount, error: lastError };
+        return { configId, status, statusCode, retryCount, error: lastError, auditLog };
     }));
 
-    return results;
+    // 3. Recursive Batch Log Dispatch (Mandate: Scalability > 500 documents)
+    const logs = results.filter(r => r && r.auditLog).map(r => r!.auditLog);
+    await batchAuditLogs(logs, db);
+
+    return results.map(r => {
+      if (!r) return null;
+      const { auditLog, ...rest } = r;
+      return rest;
+    });
 
   } catch (error) {
     console.error('Error in dispatchOutboundWebhooks:', error);
     throw error;
+  }
+}
+
+/**
+ * Recursive Audit Log Batcher
+ * Adheres to Firestore 500-op batch limit.
+ */
+async function batchAuditLogs(
+  logs: AuditLog[],
+  db: admin.firestore.Firestore
+): Promise<void> {
+  if (logs.length === 0) return;
+
+  const MAX_BATCH_SIZE = 500;
+  const chunk = logs.slice(0, MAX_BATCH_SIZE);
+  const remaining = logs.slice(MAX_BATCH_SIZE);
+
+  const batch = db.batch();
+  for (const log of chunk) {
+    batch.set(db.collection('audit_logs').doc(), log);
+  }
+
+  await batch.commit();
+
+  if (remaining.length > 0) {
+    await batchAuditLogs(remaining, db);
   }
 }

@@ -1,7 +1,12 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { Activity, ShieldCheck, Mail, Smartphone } from 'lucide-react';
+import { Activity, ShieldCheck, Mail, Smartphone, ArrowRight } from 'lucide-react';
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <main className="p-8 max-w-4xl mx-auto space-y-8">
       <SkeuomorphicContainer className="text-center">
@@ -54,8 +59,12 @@ export default function Home() {
       </div>
 
       <SkeuomorphicContainer inset className="text-center p-12">
-        <button className="neumorphic-button px-8 py-3 font-bold text-brand-primary hover:text-brand-accent transition-colors">
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="neumorphic-button px-8 py-3 font-bold text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-3 mx-auto"
+        >
           Initialize Exercise Dashboard
+          <ArrowRight className="w-5 h-5 text-brand-accent" />
         </button>
       </SkeuomorphicContainer>
     </main>
