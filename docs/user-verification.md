@@ -76,6 +76,10 @@ Use this checklist to ensure the application is working as intended.
 ## 5. Troubleshooting
 - **Port Error:** If you see "Port 3000 in use," close any other terminal windows or restart your computer.
 - **Data Missing:** Ensure you ran `npm run provision-tenant` to seed the database with test information.
+- **`npm error ENOENT` during `npm install`:** This error occurs if `package.json` cannot be found or read.
+   1. **Verify Directory:** Ensure you are in the project root directory (`resilipath/`). Type `pwd` (Mac/Linux) or `cd` (Windows) to check.
+   2. **Check File Existence:** Type `ls package.json` (Mac/Linux) or `dir package.json` (Windows). If it's missing, you may have downloaded only a sub-folder.
+   3. **Permissions:** If the file exists but fails, check permissions. On Mac/Linux: `ls -l package.json`. If it says `-rw-------`, run `chmod 644 package.json`.
 
 ---
 

@@ -1,0 +1,9 @@
+frontend/src/app/settings/:
+security
+webhooks
+
+frontend/src/app/settings/security:
+page.tsx
+
+frontend/src/app/settings/webhooks:
+page.tsx
