@@ -3,7 +3,7 @@
  * Utility to seed email templates into Firestore.
  */
 
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 
 async function seedTemplates() {
   const db = admin.firestore();
@@ -54,8 +54,12 @@ async function seedTemplates() {
 }
 
 // Check if being run directly
-if (require.main === module) {
-  if (!admin.apps.length) {
+// In ESM, check process.argv[1]
+const isMain = process.argv[1].endsWith('seed-templates.ts');
+if (isMain) {
+  if (admin.apps && !admin.apps.length) {
+    admin.initializeApp();
+  } else if (!admin.apps) {
     admin.initializeApp();
   }
   seedTemplates().then(() => {

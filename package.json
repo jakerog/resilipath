@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "ResiliPath - Modular Resilience SaaS",
   "private": true,
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "provision-tenant": "ts-node scripts/provision-tenant.ts",

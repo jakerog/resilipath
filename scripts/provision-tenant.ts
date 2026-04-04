@@ -7,11 +7,13 @@
  * 2. Run: node scripts/provision-tenant.js [email] [tenantId] [role] [tier]
  */
 
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 
 // Initialize Admin SDK
 // Assumes GOOGLE_APPLICATION_CREDENTIALS points to a valid service account key
-if (!admin.apps.length) {
+if (admin.apps && !admin.apps.length) {
+  admin.initializeApp();
+} else if (!admin.apps) {
   admin.initializeApp();
 }
 
