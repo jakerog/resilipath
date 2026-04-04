@@ -8,7 +8,7 @@ import * as admin from 'firebase-admin';
 import { ComplianceControl, AuditLog } from '../models/schema';
 
 /**
- * mapEvidenceToControl HTTPS Callable
+ * Task 2: mapEvidenceToControl HTTPS Callable
  * Manually or automatically links evidence to a compliance control.
  */
 export const mapEvidenceToControl = functions.runWith({

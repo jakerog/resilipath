@@ -29,3 +29,4 @@ export * from './integration/webhooks';
 export * from './vendors/api';
 export * from './compliance/mapper';
 export * from './api/partner';
+export * from './intelligence/scoring';
