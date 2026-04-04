@@ -52,5 +52,13 @@ All mandates and rules must align with the new modular architecture.
 
 ---
 
+## Step 7: Functional Application Verification
+To verify that the application itself is functional and properly installed:
+1. Open the [User Verification Guide](user-verification.md).
+2. Follow the installation steps for Node.js and dependencies.
+3. Use the **Functional Verification Checklist** to confirm core features like the Panic Button, Resilience Index, and Webhook Engine are operational.
+
+---
+
 ## Conclusion
-If all the above steps are confirmed, the refactor is successful and the documentation is ready for implementation kickoff.
+If all the above steps are confirmed, the ResiliPath platform is correctly architected and functional as an enterprise-grade Resilience SaaS.

@@ -37,6 +37,16 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 
 ---
 
+## Phase 4: Strategic Scale & Intelligence (Weeks 25-36)
+
+### Objectives
+- [x] **[Sub-Phase 4.1: Vendor Risk Management](phases/phase-4/4.1-vendor-risk.md)** (Automated assessments)
+- [x] **[Sub-Phase 4.2: ML Resilience Scoring](phases/phase-4/4.2-ml-analytics.md)** (Predictive analytics)
+- [x] **[Sub-Phase 4.3: Compliance Automation](phases/phase-4/4.3-compliance.md)** (Control mapping)
+- [x] **[Sub-Phase 4.4: Partner API](phases/phase-4/4.4-partner-api.md)** (External integration Spoke)
+
+---
+
 ## Phase 0: Foundation (Weeks 1-4)
 
 ### Objectives
