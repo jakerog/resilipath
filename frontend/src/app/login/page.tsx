@@ -120,11 +120,11 @@ export default function LoginPage() {
             </div>
 
             {/* SSO Discovery Hint */}
-            {idpConfig?.providerType !== 'password' && (
+            {idpConfig && idpConfig.providerType !== 'password' && (
                <div className="p-4 bg-brand-accent/5 border border-brand-accent/20 rounded-2xl animate-in zoom-in-95 duration-300">
                  <div className="flex items-center gap-3 mb-3">
                    <Key className="w-4 h-4 text-brand-accent" />
-                   <span className="text-xs font-bold text-brand-primary">Detected: {idpConfig.name}</span>
+                   <span className="text-xs font-bold text-brand-primary">Detected: {idpConfig.name || 'Enterprise SSO'}</span>
                  </div>
                  <button
                   type="button"

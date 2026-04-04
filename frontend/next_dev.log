@@ -21,3 +21,12 @@
  GET /dashboard 200 in 3.2s (next.js: 3.1s, application-code: 74ms)
  GET / 200 in 100ms (next.js: 8ms, application-code: 92ms)
  GET /dashboard 200 in 126ms (next.js: 5ms, application-code: 121ms)
+○ Compiling /login ...
+ GET /login 200 in 12.6s (next.js: 7.9s, application-code: 4.7s)
+[browser] Discovery failed: FirebaseError: internal
+FirebaseError: internal (src/app/login/page.tsx:30:17)
+ GET /dashboard 200 in 251ms (next.js: 57ms, application-code: 194ms)
+ GET /login 200 in 49ms (next.js: 6ms, application-code: 44ms)
+ GET /login 200 in 110ms (next.js: 6ms, application-code: 104ms)
+[browser] Discovery failed: FirebaseError: internal
+FirebaseError: internal (src/app/login/page.tsx:30:17)
