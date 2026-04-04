@@ -26,3 +26,6 @@ export * from './planning/triggers';
 export * from './planning/reminders';
 export * from './planning/exports';
 export * from './integration/webhooks';
+export * from './vendors/api';
+export * from './compliance/mapper';
+export * from './api/partner';

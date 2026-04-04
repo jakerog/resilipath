@@ -223,6 +223,74 @@ export interface Vendor {
   contactEmail: string;
   slaMinutes?: number;
   lastReviewedAt: FieldValue | Date;
+  riskScore?: number; // Phase 4
+  complianceStatus?: 'compliant' | 'non-compliant' | 'pending'; // Phase 4
+  assessments?: {
+    id: string;
+    status: 'pending' | 'sent' | 'completed';
+    score: number;
+    completedAt?: FieldValue | Date;
+  }[];
+}
+
+/**
+ * Phase 4: Vendor Risk Management - Assessment Schema
+ * Collection: /vendor_assessments/{assessmentId}
+ */
+export interface VendorAssessment {
+  assessmentId: string;
+  vendorId: string;
+  tenantId: string;
+  questions: {
+    id: string;
+    text: string;
+    response?: string | number | boolean;
+    evidenceUrl?: string;
+  }[];
+  status: 'draft' | 'sent' | 'completed';
+  score: number;
+  createdAt: FieldValue | Date;
+  completedAt?: FieldValue | Date;
+}
+
+/**
+ * Phase 4: Intelligence - Resilience Scoring Schema
+ * Collection: /resilience_scores/{scoreId}
+ */
+export interface ResilienceScore {
+  scoreId: string;
+  tenantId: string;
+  overallScore: number; // 0-100
+  categories: {
+    planning: number;
+    execution: number;
+    infrastructure: number;
+    vendors: number;
+  };
+  metrics: {
+    avgRtoVariance: number;
+    evidenceCoverage: number;
+    planFreshness: number;
+  };
+  calculatedAt: FieldValue | Date;
+}
+
+/**
+ * Phase 4: Compliance - Control Mapping Schema
+ * Collection: /compliance_controls/{controlId}
+ */
+export interface ComplianceControl {
+  controlId: string;
+  framework: 'SOC2' | 'ISO27001' | 'DORA' | 'HIPAA';
+  code: string; // e.g., CC1.1
+  title: string;
+  description: string;
+  mappedEvidenceIds: {
+    tenantId: string;
+    evidenceIds: string[];
+    taskIds: string[];
+    planIds: string[];
+  }[];
 }
 
 /**
