@@ -21,7 +21,7 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 | Phase 1 MVP Launch | 2026-04-01 | [Resilience Exercise Execution Engine](phases/phase-1/summary.md) - **100% COMPLETE** |
 | Phase 2 Alpha | 2026-05-27 | [Resilience Planning & Lifecycle](phases/phase-2/summary.md) - **100% COMPLETE** |
 | Phase 3 Complete | 2026-07-22 | [Crisis Comms & Hardening](phases/phase-3/summary.md) - **100% COMPLETE** |
-| Phase 4 Alpha | 2026-10-01 | [Scale & Intelligence](phases/phase-4/summary.md) - **IN PROGRESS (75%)** |
+| Phase 4 Alpha | 2026-10-01 | [Scale & Intelligence](phases/phase-4/summary.md) - **IN PROGRESS (90%)** |
 
 ---
 
