@@ -26,16 +26,34 @@ if (typeof window !== "undefined" || process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
   storage = getStorage(app);
   functions = getFunctions(app);
 
-  // Connect to Emulators if running locally and no real API key is provided
-  if (process.env.NODE_ENV === 'development' && (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'mock-api-key')) {
+  // Connect to Emulators if running locally and either:
+  // 1. Explicitly requested via NEXT_PUBLIC_USE_EMULATORS=true
+  // 2. No real API key is provided (default development mode)
+  const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true' ||
+                      (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'mock-api-key');
+
+  if (process.env.NODE_ENV === 'development' && useEmulators) {
     try {
-      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-      connectFirestoreEmulator(db, 'localhost', 8080);
-      connectStorageEmulator(storage, 'localhost', 9199);
-      connectFunctionsEmulator(functions, 'localhost', 5001);
-      console.log("🛠️ Connected to Local Firebase Emulators (Project: resilipath-test)");
-    } catch (err) {
-      console.error("❌ Failed to connect to Firebase Emulators. Ensure 'firebase emulators:start' is running.", err);
+      // Connect to Auth Emulator (default port 9099)
+      connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+
+      // Connect to Firestore Emulator (default port 8080)
+      connectFirestoreEmulator(db, '127.0.0.1', 8080);
+
+      // Connect to Storage Emulator (default port 9199)
+      connectStorageEmulator(storage, '127.0.0.1', 9199);
+
+      // Connect to Functions Emulator (default port 5001)
+      connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+
+      console.log("🛠️  Connected to Local Firebase Emulators (Project: resilipath-test)");
+      console.log("👉 Ensure you started them with: firebase emulators:start");
+    } catch (err: any) {
+      if (err.code === 'failed-precondition') {
+        console.warn("⚠️  Firebase Emulators already initialized. This is expected during HMR.");
+      } else {
+        console.error("❌ Failed to connect to Firebase Emulators:", err);
+      }
     }
   }
 } else {
