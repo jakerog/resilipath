@@ -10,15 +10,16 @@
 import admin from 'firebase-admin';
 
 // Initialize Admin SDK
-// Defaults to 'resilipath-test' for local/emulator environments if no project ID is set
-if (admin.apps && !admin.apps.length) {
-  admin.initializeApp({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
-  });
-} else if (!admin.apps) {
-  admin.initializeApp({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
-  });
+// Defaults to 'resilipath-staging' if no environment is set.
+// Note: If running locally against emulators, you MUST set FIREBASE_AUTH_EMULATOR_HOST.
+const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-staging';
+
+if (!admin.apps.length) {
+  admin.initializeApp({ projectId });
+}
+
+if (projectId === 'resilipath-test' && !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+  console.warn('⚠️ WARNING: Using "resilipath-test" without FIREBASE_AUTH_EMULATOR_HOST. This will likely fail.');
 }
 
 async function provisionTenant(email: string, tenantId: string, role: string, tier: string = 'standard') {

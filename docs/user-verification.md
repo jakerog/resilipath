@@ -88,6 +88,9 @@ Use this checklist to ensure the application is working as intended.
    1. **Verify Directory:** Ensure you are in the project root directory (`resilipath/`). Type `pwd` (Mac/Linux) or `cd` (Windows) to check.
    2. **Check File Existence:** Type `ls package.json` (Mac/Linux) or `dir package.json` (Windows). If it's missing, you may have downloaded only a sub-folder.
    3. **Permissions:** If the file exists but fails, check permissions. On Mac/Linux: `ls -l package.json`. If it says `-rw-------`, run `chmod 644 package.json`.
+- **`Project 'projects/resilipath-test' not found` during `provision-tenant`:** This error means you are running the script against a real Google project that doesn't exist, or you intended to use the emulator but didn't set the environment variables.
+   1. **Using Emulator:** Ensure you have run `export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"` in your terminal before running the script.
+   2. **Using Real Project:** If you intended to use a real project, ensure `GOOGLE_CLOUD_PROJECT` is set to your valid Firebase Project ID.
 
 ---
 
