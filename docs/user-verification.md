@@ -29,7 +29,9 @@ Follow these simple commands in your computer's terminal:
    ```
 
 3. **Provision Your Test Environment:**
-   ResiliPath uses a secure, isolated architecture. You must provision an initial Admin user and Tenant to log in. Run the following:
+   ResiliPath uses a secure, isolated architecture. You must provision an initial Admin user and Tenant to log in. **Important: This must be run from the root project folder, not the frontend folder.**
+
+   Run the following from the `resilipath/` root:
    ```bash
    # Syntax: npm run provision-tenant [email] [tenantId] [role] [tier]
    npm run provision-tenant admin@enterprise.com enterprise-01 Admin elite
