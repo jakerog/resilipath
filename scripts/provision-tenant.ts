@@ -10,11 +10,10 @@
 import admin from 'firebase-admin';
 
 // Initialize Admin SDK
-// Defensive Logic: If emulator variables are missing, we default to 'resilipath-test'
-// but warn the user. This prevents 'Project not found' errors when running real GCP APIs
-// against non-existent default project IDs.
+// Defensive Logic: Prioritize the emulator if variables are set, else default to 'resilipath-staging'
 const isEmulator = !!(process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST);
-const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test';
+const defaultProject = isEmulator ? 'resilipath-test' : 'resilipath-staging';
+const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || defaultProject;
 
 if (!admin.apps.length) {
   admin.initializeApp({ projectId });
@@ -24,9 +23,10 @@ if (isEmulator) {
   console.log(`📡 Connecting to Firebase Emulators (Project: ${projectId})`);
 } else {
   console.log(`🌍 Connecting to Production/Staging (Project: ${projectId})`);
-  if (projectId === 'resilipath-staging' || projectId === 'resilipath-test') {
-    console.warn('⚠️ WARNING: You are running against a default project without emulator variables.');
-    console.warn('   If this fails with "Project not found", run: export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"');
+  if (projectId === 'resilipath-test') {
+    console.warn('⚠️ WARNING: Using "resilipath-test" without emulator variables. This will likely fail.');
+    console.warn('   If you intended to use the emulator, run: export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"');
+    console.warn('   If you intended to use staging, run: export GOOGLE_CLOUD_PROJECT="resilipath-staging"');
   }
 }
 

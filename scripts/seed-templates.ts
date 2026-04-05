@@ -58,7 +58,8 @@ async function seedTemplates() {
 const isMain = process.argv[1].endsWith('seed-templates.ts');
 if (isMain) {
   const isEmulator = !!(process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST);
-  const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test';
+  const defaultProject = isEmulator ? 'resilipath-test' : 'resilipath-staging';
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || defaultProject;
 
   if (!admin.apps.length) {
     admin.initializeApp({ projectId });
@@ -70,6 +71,8 @@ if (isMain) {
     console.log(`🌍 Connecting to Production/Staging (Project: ${projectId})`);
     if (projectId === 'resilipath-test') {
       console.warn('⚠️ WARNING: Using "resilipath-test" without emulator variables. This will likely fail.');
+      console.warn('   If you intended to use the emulator, run: export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"');
+      console.warn('   If you intended to use staging, run: export GOOGLE_CLOUD_PROJECT="resilipath-staging"');
     }
   }
 
