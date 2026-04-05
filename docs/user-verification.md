@@ -29,10 +29,12 @@ Follow these simple commands in your computer's terminal:
    ```
 
 3. **Provision Your Test Environment:**
-   Run the following to set up a sample "Isolated Tenant" for testing:
+   ResiliPath uses a secure, isolated architecture. You must provision an initial Admin user and Tenant to log in. Run the following:
    ```bash
-   npm run provision-tenant
+   # Syntax: npm run provision-tenant [email] [tenantId] [role] [tier]
+   npm run provision-tenant admin@enterprise.com enterprise-01 Admin elite
    ```
+   *Note: Use the email you plan to log in with. The password can be set during the first login or via the Firebase Emulator UI.*
 
 ---
 
