@@ -58,9 +58,13 @@ async function seedTemplates() {
 const isMain = process.argv[1].endsWith('seed-templates.ts');
 if (isMain) {
   if (admin.apps && !admin.apps.length) {
-    admin.initializeApp();
+    admin.initializeApp({
+      projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
+    });
   } else if (!admin.apps) {
-    admin.initializeApp();
+    admin.initializeApp({
+      projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
+    });
   }
   seedTemplates().then(() => {
     console.log('Seeding complete.');

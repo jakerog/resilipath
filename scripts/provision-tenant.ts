@@ -10,11 +10,15 @@
 import admin from 'firebase-admin';
 
 // Initialize Admin SDK
-// Assumes GOOGLE_APPLICATION_CREDENTIALS points to a valid service account key
+// Defaults to 'resilipath-test' for local/emulator environments if no project ID is set
 if (admin.apps && !admin.apps.length) {
-  admin.initializeApp();
+  admin.initializeApp({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
+  });
 } else if (!admin.apps) {
-  admin.initializeApp();
+  admin.initializeApp({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
+  });
 }
 
 async function provisionTenant(email: string, tenantId: string, role: string, tier: string = 'standard') {

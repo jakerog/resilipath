@@ -36,7 +36,11 @@ Follow these simple commands in your computer's terminal:
    # Syntax: npm run provision-tenant [email] [tenantId] [role] [tier]
    npm run provision-tenant admin@enterprise.com enterprise-01 Admin elite
    ```
-   *Note: Use the email you plan to log in with. The password can be set during the first login or via the Firebase Emulator UI.*
+   *Note: If you are running against the local emulator, ensure you have the emulator environment variables set in your terminal:*
+   ```bash
+   export FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
+   export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"
+   ```
 
 ---
 
