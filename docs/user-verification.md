@@ -29,18 +29,36 @@ Follow these simple commands in your computer's terminal:
    ```
 
 3. **Provision Your Test Environment:**
-   ResiliPath uses a secure, isolated architecture. You must provision an initial Admin user and Tenant to log in. **Important: This must be run from the root project folder, not the frontend folder.**
+   ResiliPath uses a secure, isolated architecture. You must provision an initial Admin user and Tenant to log in.
 
-   Run the following from the `resilipath/` root:
-   ```bash
-   # Syntax: npm run provision-tenant [email] [tenantId] [role] [tier]
-   npm run provision-tenant admin@enterprise.com enterprise-01 Admin elite
-   ```
-   *Note: If you are running against the local emulator, ensure you have the emulator environment variables set in your terminal:*
-   ```bash
-   export FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
-   export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"
-   ```
+   ### **Local Development Workflow**
+   Follow these steps in order to set up your local environment:
+
+   1. **Start Firebase Emulators:** (In Terminal 1)
+      ```bash
+      # From the root directory
+      firebase emulators:start
+      ```
+
+   2. **Set Emulator Environment Variables:** (In Terminal 2)
+      ```bash
+      # Use these to point scripts and the client to your local emulators
+      export FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
+      export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"
+      ```
+
+   3. **Provision Your Admin User:** (In Terminal 2)
+      **Important: This must be run from the root project folder.**
+      ```bash
+      # Syntax: npm run provision-tenant [email] [tenantId] [role] [tier]
+      npm run provision-tenant admin@enterprise.com enterprise-01 Admin elite
+      ```
+
+   4. **Start the Web Interface:** (In Terminal 2)
+      ```bash
+      cd frontend
+      npm run dev
+      ```
 
 ---
 

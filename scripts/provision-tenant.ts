@@ -10,16 +10,19 @@
 import admin from 'firebase-admin';
 
 // Initialize Admin SDK
-// Defaults to 'resilipath-staging' if no environment is set.
-// Note: If running locally against emulators, you MUST set FIREBASE_AUTH_EMULATOR_HOST.
-const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-staging';
+// Logic: If emulator environment variables are present, prioritize 'resilipath-test'
+// to ensure alignment with local development mocks. Otherwise, use staging/prod from environment.
+const isEmulator = !!(process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST);
+const defaultProjectId = isEmulator ? 'resilipath-test' : 'resilipath-staging';
+
+const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || defaultProjectId;
 
 if (!admin.apps.length) {
   admin.initializeApp({ projectId });
 }
 
-if (projectId === 'resilipath-test' && !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-  console.warn('⚠️ WARNING: Using "resilipath-test" without FIREBASE_AUTH_EMULATOR_HOST. This will likely fail.');
+if (isEmulator) {
+  console.log(`📡 Connecting to Firebase Emulators (Project: ${projectId})`);
 }
 
 async function provisionTenant(email: string, tenantId: string, role: string, tier: string = 'standard') {

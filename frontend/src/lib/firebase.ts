@@ -27,12 +27,16 @@ if (typeof window !== "undefined" || process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
   functions = getFunctions(app);
 
   // Connect to Emulators if running locally and no real API key is provided
-  if (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-    connectAuthEmulator(auth, 'http://localhost:9099');
-    connectFirestoreEmulator(db, 'localhost', 8080);
-    connectStorageEmulator(storage, 'localhost', 9199);
-    connectFunctionsEmulator(functions, 'localhost', 5001);
-    console.log("Connected to Firebase Emulators");
+  if (process.env.NODE_ENV === 'development' && (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'mock-api-key')) {
+    try {
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      connectFirestoreEmulator(db, 'localhost', 8080);
+      connectStorageEmulator(storage, 'localhost', 9199);
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+      console.log("🛠️ Connected to Local Firebase Emulators (Project: resilipath-test)");
+    } catch (err) {
+      console.error("❌ Failed to connect to Firebase Emulators. Ensure 'firebase emulators:start' is running.", err);
+    }
   }
 } else {
   // SSR / Build time placeholders
