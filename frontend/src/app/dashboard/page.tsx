@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
 import { where, orderBy } from 'firebase/firestore';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { Activity, LayoutDashboard, Calendar, ChevronRight, PlayCircle, Clock, Lock } from 'lucide-react';
+import { Activity, LayoutDashboard, Calendar, ChevronRight, PlayCircle, Clock, Lock, ArrowRight, AlertTriangle } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function ExerciseGallery() {
@@ -70,15 +71,36 @@ export default function ExerciseGallery() {
       </header>
 
       <main className="max-w-5xl mx-auto space-y-6">
+        {tenantId === 'pending' && (
+          <div className="bg-brand-warning/10 border border-brand-warning/20 p-4 rounded-2xl flex gap-3 mb-6 animate-in slide-in-from-top-2">
+            <AlertTriangle className="w-5 h-5 text-brand-warning shrink-0" />
+            <div className="space-y-1">
+              <p className="text-xs text-brand-primary font-bold">Account Pending Provisioning</p>
+              <p className="text-[10px] text-brand-secondary leading-relaxed">
+                Your account is not yet mapped to a tenant. Please run the <code className="bg-white/50 px-1 rounded text-brand-accent">provision-tenant</code> script
+                or contact your administrator to gain full platform access.
+              </p>
+            </div>
+          </div>
+        )}
+
         {exercises.length === 0 ? (
-          <SkeuomorphicContainer className="p-12 text-center space-y-4">
+          <SkeuomorphicContainer className="p-12 text-center space-y-6">
             <div className="mx-auto w-16 h-16 neumorphic-inset rounded-full flex items-center justify-center">
               <Calendar className="w-8 h-8 text-brand-secondary opacity-30" />
             </div>
-            <p className="text-sm text-brand-secondary font-medium">No resilience exercises found for your tenant.</p>
-            <p className="text-xs text-brand-secondary opacity-60 max-w-md mx-auto">
-              Please use the Resilience Planning module to draft and schedule a new exercise from a BCP template.
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm text-brand-secondary font-medium">No resilience exercises found for your tenant.</p>
+              <p className="text-xs text-brand-secondary opacity-60 max-w-md mx-auto">
+                Exercises are provisioned from approved Resilience Plans. Follow the planning lifecycle to begin.
+              </p>
+            </div>
+            <Link
+              href="/plans"
+              className="neumorphic-button inline-flex items-center gap-2 px-6 py-3 text-[10px] font-bold text-brand-accent uppercase tracking-widest mx-auto"
+            >
+              Access Resilience Planning <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </SkeuomorphicContainer>
         ) : (
           <div className="grid gap-6">

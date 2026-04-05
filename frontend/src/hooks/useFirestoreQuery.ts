@@ -19,7 +19,14 @@ export function useFirestoreQuery<T = DocumentData>(
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const q = query(collection(db, collectionName), ...constraints);
+    let q;
+    try {
+      q = query(collection(db, collectionName), ...constraints);
+    } catch (err) {
+      console.error(`Error creating query for ${collectionName}:`, err);
+      setLoading(false);
+      return;
+    }
 
     // Real-time listener (Default)
     if (options.realtime !== false) {
@@ -61,7 +68,7 @@ export function useFirestoreQuery<T = DocumentData>(
     };
 
     fetchData();
-  }, [collectionName, JSON.stringify(constraints), options.realtime]);
+  }, [collectionName, constraints.length, options.realtime]);
 
   return { data, loading, error };
 }

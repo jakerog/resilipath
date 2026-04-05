@@ -89,6 +89,14 @@ export default function PlanEditor() {
         updatedAt: serverTimestamp(),
       });
       console.log(`Plan status updated to ${newStatus}`);
+
+      // Auto-provision exercise if approved
+      if (newStatus === 'approved') {
+        const provisionFunc = httpsCallable(functions, 'provisionExerciseFromPlan');
+        await provisionFunc({ planId });
+        console.log('Exercise provisioned from approved plan');
+      }
+
     } catch (err) {
       console.error('Failed to update plan status:', err);
     } finally {

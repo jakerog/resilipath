@@ -62,6 +62,18 @@ Follow these simple commands in your computer's terminal:
 
 ---
 
+## 3. Core Workflow: Resilience Exercise Lifecycle
+
+To see data on your dashboard, you must follow the Resilience Lifecycle:
+
+1. **Access Resilience Planning:** Click 'Planning' in the sidebar.
+2. **Choose a BCP Template:** Select one from the 'Standardized Templates' gallery.
+3. **Draft a Plan:** Answer the interview questions and save your draft.
+4. **Approve for Execution:** Set the plan status to 'Approved' in the Plan Editor.
+5. **Schedule Exercise:** Once approved, an 'Schedule Exercise' option will appear to provision your dashboard.
+
+---
+
 ## 3. Launching the Application
 To see ResiliPath in action, you need to start the web application:
 

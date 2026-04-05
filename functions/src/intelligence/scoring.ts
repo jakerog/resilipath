@@ -5,7 +5,7 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { ResilienceScore, Exercise, ExerciseTask, ResiliencePlan, Vendor } from '../models/schema';
+import { ResilienceScore, Exercise, ExerciseTask, ResiliencePlan, Vendor, Asset } from '../models/schema';
 
 /**
  * calculateTenantResilienceScore HTTPS Callable
