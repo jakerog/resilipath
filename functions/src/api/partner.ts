@@ -24,6 +24,8 @@ export const partnerApiV1 = functions.runWith({
     return;
   }
 
+  const db = admin.firestore();
+
   // 2. Authentication (Production Integration)
   // Fetch from the /api_keys collection to validate against registered enterprise partners
   const apiKeySnap = await db.collection('api_keys').doc(apiKey || 'none').get();
@@ -32,8 +34,7 @@ export const partnerApiV1 = functions.runWith({
     return;
   }
 
-  const db = admin.firestore();
-  const tenantId = 'tenant-api-test'; // Mock tenant for initial foundation
+  const tenantId = apiKeySnap.data()?.tenantId || 'tenant-api-test';
 
   try {
     const { method, path } = req;

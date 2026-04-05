@@ -65,8 +65,29 @@ export const calculateTenantResilienceScore = functions.runWith({
       vendorScore = riskScores.reduce((a, b) => a + b, 0) / vendors.length;
     }
 
-    // 5. Calculate Overall Score
-    const overallScore = Math.round((planningScore * 0.4) + (executionScore * 0.4) + (vendorScore * 0.2));
+    // 5. Fetch Evidence Coverage (Phase 2/4 Integration)
+    const tasksSnap = await db.collection('tasks').where('tenantId', '==', tenantId).get();
+    let evidenceCoverage = 0;
+    if (!tasksSnap.empty) {
+      const tasks = tasksSnap.docs.map(d => d.data() as ExerciseTask);
+      const tasksWithEvidenceReq = tasks.filter(t => t.evidenceRequired);
+      if (tasksWithEvidenceReq.length > 0) {
+        const tasksWithEvidenceProvided = tasksWithEvidenceReq.filter(t => t.evidenceIds && t.evidenceIds.length > 0);
+        evidenceCoverage = (tasksWithEvidenceProvided.length / tasksWithEvidenceReq.length) * 100;
+      }
+    }
+
+    // 6. Calculate Infrastructure Score (Asset Criticality & Review Status)
+    const assetsSnap = await db.collection('assets').where('tenantId', '==', tenantId).get();
+    let infrastructureScore = 0;
+    if (!assetsSnap.empty) {
+      const assets = assetsSnap.docs.map(d => d.data() as Asset);
+      const reviewedAssets = assets.filter(a => a.lastReviewedAt);
+      infrastructureScore = (reviewedAssets.length / assets.length) * 100;
+    }
+
+    // 7. Calculate Overall Score
+    const overallScore = Math.round((planningScore * 0.3) + (executionScore * 0.3) + (vendorScore * 0.2) + (infrastructureScore * 0.2));
 
     const scoreData: ResilienceScore = {
       scoreId: db.collection('resilience_scores').doc().id,
@@ -76,11 +97,11 @@ export const calculateTenantResilienceScore = functions.runWith({
         planning: Math.round(planningScore),
         execution: Math.round(executionScore),
         vendors: Math.round(vendorScore),
-        infrastructure: 85 // Mocked for now
+        infrastructure: Math.round(infrastructureScore)
       },
       metrics: {
         avgRtoVariance: Math.round(totalVariance / (exercisesSnap.size || 1)),
-        evidenceCoverage: 92, // Mocked
+        evidenceCoverage: Math.round(evidenceCoverage),
         planFreshness: Math.round(planningScore)
       },
       calculatedAt: admin.firestore.FieldValue.serverTimestamp()

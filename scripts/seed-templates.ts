@@ -57,15 +57,22 @@ async function seedTemplates() {
 // In ESM, check process.argv[1]
 const isMain = process.argv[1].endsWith('seed-templates.ts');
 if (isMain) {
-  if (admin.apps && !admin.apps.length) {
-    admin.initializeApp({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
-    });
-  } else if (!admin.apps) {
-    admin.initializeApp({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test'
-    });
+  const isEmulator = !!(process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST);
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'resilipath-test';
+
+  if (!admin.apps.length) {
+    admin.initializeApp({ projectId });
   }
+
+  if (isEmulator) {
+    console.log(`📡 Connecting to Firebase Emulators (Project: ${projectId})`);
+  } else {
+    console.log(`🌍 Connecting to Production/Staging (Project: ${projectId})`);
+    if (projectId === 'resilipath-test') {
+      console.warn('⚠️ WARNING: Using "resilipath-test" without emulator variables. This will likely fail.');
+    }
+  }
+
   seedTemplates().then(() => {
     console.log('Seeding complete.');
     process.exit(0);

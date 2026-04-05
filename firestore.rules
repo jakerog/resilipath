@@ -187,6 +187,13 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
     }
 
+    match /api_keys/{keyId} {
+      allow read: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+      allow create: if isAuthenticated() && (belongsToTenant(request.resource.data) && isAdmin());
+      allow update: if isAuthenticated() && (belongsToTenant(resource.data) && belongsToTenant(request.resource.data) && isAdmin());
+      allow delete: if isAuthenticated() && (belongsToTenant(resource.data) && isAdmin());
+    }
+
     // ---------------------------------------------------------
     // Rate Limiting (Phase 3.5)
     // ---------------------------------------------------------
