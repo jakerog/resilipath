@@ -15,7 +15,7 @@ import {
   Target,
   BrainCircuit
 } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function IntelligenceDashboard() {
   const { tenantId } = useAuth();

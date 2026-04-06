@@ -26,7 +26,7 @@ import {
   ExternalLink,
   ShieldCheck
 } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function WebhookSettings() {
   const { tenantId } = useAuth();

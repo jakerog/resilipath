@@ -7,7 +7,7 @@ import { signInWithEmailAndPassword, OAuthProvider, signInWithPopup } from 'fire
 import { httpsCallable } from 'firebase/functions';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Lock, Mail, ArrowRight, ShieldCheck, Key, AlertCircle, Loader2 } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function LoginPage() {
   const router = useRouter();

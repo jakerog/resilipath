@@ -6,11 +6,12 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Shield, Key, Globe, Save, CheckCircle2, AlertCircle } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function EnterpriseSecurity() {
-  const { tenantId, user } = useAuth();
+  const { tenantId, user, refreshClaims } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tenant, setTenant] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -103,9 +104,16 @@ export default function EnterpriseSecurity() {
             </p>
           </div>
           <button
-            onClick={() => window.location.reload()}
-            className="neumorphic-button px-8 py-3 text-[10px] font-bold text-brand-accent uppercase tracking-widest"
+            onClick={async () => {
+              if (!user) return;
+              setIsRefreshing(true);
+              await refreshClaims?.(user);
+              setIsRefreshing(false);
+            }}
+            disabled={isRefreshing}
+            className="neumorphic-button px-8 py-3 text-[10px] font-bold text-brand-accent uppercase tracking-widest flex items-center gap-2 mx-auto"
           >
+            {isRefreshing ? <div className="w-3 h-3 border-2 border-brand-accent border-t-transparent animate-spin rounded-full" /> : null}
             Refresh Authorization
           </button>
         </SkeuomorphicContainer>

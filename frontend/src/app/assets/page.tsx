@@ -8,9 +8,10 @@ import { db } from '@/lib/firebase';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Database, ShieldCheck, Tag, User, Clock, CheckCircle2, MapPin, X, Save, Plus } from 'lucide-react';
 import { collection, addDoc } from 'firebase/firestore';
+import clsx from 'clsx';
 
 export default function AssetRegistry() {
-  const { tenantId, user, loading: authLoading } = useAuth();
+  const { tenantId, user, claims, loading: authLoading } = useAuth();
   const [isAdding, setIsAdding] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const [editingAsset, setEditingAsset] = React.useState<any>(null);
@@ -75,12 +76,14 @@ export default function AssetRegistry() {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => setIsAdding(true)}
-          className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-accent uppercase tracking-widest flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> Add New Asset
-        </button>
+        {['Admin', 'Moderator'].includes(claims?.role || '') && (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-accent uppercase tracking-widest flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Add New Asset
+          </button>
+        )}
       </header>
 
       <main className="max-w-7xl mx-auto">
@@ -229,9 +232,10 @@ export default function AssetRegistry() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold uppercase text-brand-secondary tracking-widest">Criticality</label>
                   <div className="grid grid-cols-3 gap-2">
-                    {['low', 'medium', 'high', 'critical'].slice(1).map((level) => (
+                    {['medium', 'high', 'critical'].map((level) => (
                       <button
                         key={level}
+                        type="button"
                         onClick={() => setNewAsset({ ...newAsset, criticality: level as any })}
                         className={clsx(
                           "p-2 rounded-lg text-[9px] font-bold uppercase tracking-tighter transition-all",

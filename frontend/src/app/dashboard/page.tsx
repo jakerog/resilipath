@@ -8,11 +8,12 @@ import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Activity, LayoutDashboard, Calendar, ChevronRight, PlayCircle, Clock, Lock, ArrowRight, AlertTriangle } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function ExerciseGallery() {
   const router = useRouter();
-  const { tenantId, user, loading: authLoading } = useAuth();
+  const { tenantId, user, loading: authLoading, refreshClaims } = useAuth();
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   // 1. Redirect to login if not authenticated
   useEffect(() => {
@@ -85,9 +86,16 @@ export default function ExerciseGallery() {
               </p>
             </div>
             <button
-              onClick={() => window.location.reload()}
-              className="neumorphic-button px-6 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest whitespace-nowrap"
+              onClick={async () => {
+                if (!user) return;
+                setIsRefreshing(true);
+                await refreshClaims?.(user);
+                setIsRefreshing(false);
+              }}
+              disabled={isRefreshing}
+              className="neumorphic-button px-6 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest whitespace-nowrap flex items-center gap-2"
             >
+              {isRefreshing ? <div className="w-3 h-3 border-2 border-brand-accent border-t-transparent animate-spin rounded-full" /> : null}
               Refresh Authorization
             </button>
           </div>

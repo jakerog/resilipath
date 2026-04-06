@@ -8,7 +8,7 @@ import { httpsCallable } from 'firebase/functions';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
 import { Smartphone, Mail, Phone, AlertTriangle, Send, CheckCircle2, Loader2, Users } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function CrisisCommand() {
   const { tenantId } = useAuth();

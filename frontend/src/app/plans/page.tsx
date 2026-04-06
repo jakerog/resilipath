@@ -12,7 +12,8 @@ import { BookOpen, FileText, Plus, ArrowRight, Shield, Clock } from 'lucide-reac
 
 export default function PlanGallery() {
   const router = useRouter();
-  const { tenantId, user, loading: authLoading } = useAuth();
+  const { tenantId, user, loading: authLoading, refreshClaims } = useAuth();
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   // 1. Fetch available templates (global) - Optimized non-realtime
   const { data: templates, loading: templatesLoading, error: templatesError } = useFirestoreQuery('bcp_templates', [], {
@@ -92,7 +93,14 @@ export default function PlanGallery() {
         <ReviewSummary plans={plans} />
 
         {plans.length === 0 && !plansLoading && tenantId !== 'pending' && (
-          <SkeuomorphicContainer inset className="p-12 text-center space-y-6">
+          <SkeuomorphicContainer
+            inset
+            className="p-12 text-center space-y-6 cursor-pointer hover:bg-brand-primary/5 transition-colors"
+            onClick={() => {
+              const el = document.getElementById('templates-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
             <div className="mx-auto w-16 h-16 neumorphic-button rounded-full flex items-center justify-center text-brand-accent">
               <Plus className="w-8 h-8" />
             </div>
@@ -103,7 +111,7 @@ export default function PlanGallery() {
               </p>
             </div>
             <button
-              onClick={() => document.getElementById('templates-section')?.scrollIntoView({ behavior: 'smooth' })}
+              type="button"
               className="text-xs font-black text-brand-accent uppercase tracking-widest hover:underline"
             >
               Browse Templates Below
@@ -122,6 +130,19 @@ export default function PlanGallery() {
                 Your workspace is currently initializing. To access standardized BCP templates and create resilience plans, ensure your account has been provisioned with the <code className="bg-white/50 px-1.5 rounded text-brand-accent">provision-tenant</code> script.
               </p>
             </div>
+            <button
+              onClick={async () => {
+                if (!user) return;
+                setIsRefreshing(true);
+                await refreshClaims?.(user);
+                setIsRefreshing(false);
+              }}
+              disabled={isRefreshing}
+              className="neumorphic-button px-6 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest whitespace-nowrap flex items-center gap-2"
+            >
+              {isRefreshing ? <div className="w-3 h-3 border-2 border-brand-accent border-t-transparent animate-spin rounded-full" /> : null}
+              Refresh Authorization
+            </button>
           </div>
         )}
 
@@ -182,9 +203,12 @@ export default function PlanGallery() {
               Standardized BCP Templates
             </h2>
             {templatesError && (
-              <span className="text-[10px] font-bold text-brand-danger uppercase tracking-tight bg-brand-danger/5 px-2 py-1 rounded">
-                Template fetch limited by permissions
-              </span>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-[10px] font-bold text-brand-danger uppercase tracking-tight bg-brand-danger/5 px-2 py-1 rounded hover:bg-brand-danger/10 transition-colors"
+              >
+                Template fetch limited • Click to Retry
+              </button>
             )}
           </div>
 

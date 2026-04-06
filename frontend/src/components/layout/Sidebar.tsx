@@ -13,7 +13,7 @@ import {
   LogOut,
   ChevronRight
 } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';

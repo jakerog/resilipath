@@ -15,7 +15,7 @@ import {
   Lock,
   Layers
 } from 'lucide-react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 
 export default function ComplianceDashboard() {
   const { tenantId } = useAuth();

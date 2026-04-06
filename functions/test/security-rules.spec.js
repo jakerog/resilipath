@@ -1,347 +1,180 @@
-/**
- * Task 8: Firestore Security Rules Unit Tests
- * ResiliPath - Data Layer & Persistence
- *
- * Uses @firebase/rules-unit-testing to validate isolation and RBAC.
- */
-
 const {
-  assertFails,
-  assertSucceeds,
   initializeTestEnvironment,
+  assertSucceeds,
+  assertFails
 } = require('@firebase/rules-unit-testing');
-const fs = require('fs');
-const path = require('path');
+const { readFileSync } = require('fs');
 
-describe('Firestore Security Rules', function() {
-  this.timeout(10000); // Increase timeout for environment initialization
+describe('Firestore Security Rules', () => {
   let testEnv;
 
   before(async () => {
     testEnv = await initializeTestEnvironment({
       projectId: 'resilipath-test',
       firestore: {
-        rules: fs.readFileSync(path.resolve(__dirname, '../../firestore.rules'), 'utf8'),
+        rules: readFileSync('../firestore.rules', 'utf8'),
         host: '127.0.0.1',
-        port: 8080,
+        port: 8080
       },
     });
-  });
-
-  beforeEach(async () => {
-    await testEnv.clearFirestore();
   });
 
   after(async () => {
     await testEnv.cleanup();
   });
 
-  // 1. Tenant Isolation Tests (M1)
+  beforeEach(async () => {
+    await testEnv.clearFirestore();
+  });
+
   describe('Tenant Isolation', () => {
     it('should prevent cross-tenant data access', async () => {
-      const aliceDb = testEnv.authenticatedContext('alice', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
+      const aliceDb = testEnv.authenticatedContext('alice', { tenantId: 'tenant-a', role: 'User' }).firestore();
+      const bobDb = testEnv.authenticatedContext('bob', { tenantId: 'tenant-b', role: 'User' }).firestore();
 
-      // Create a document belonging to tenant-b
+      const exerciseRef = aliceDb.collection('exercises').doc('ex-1');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('exercises').doc('ex-2').set({
-          tenantId: 'tenant-b',
-          name: 'Exercise B',
-        });
+        await context.firestore().collection('exercises').doc('ex-1').set({ tenantId: 'tenant-a', name: 'Exercise A' });
       });
 
-      // Alice (tenant-a) should NOT be able to read tenant-b's exercise
-      await assertFails(aliceDb.collection('exercises').doc('ex-2').get());
+      await assertSucceeds(aliceDb.collection('exercises').doc('ex-1').get());
+      await assertFails(bobDb.collection('exercises').doc('ex-1').get());
     });
 
     it('should allow access to same-tenant data', async () => {
-      const aliceDb = testEnv.authenticatedContext('alice', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
-
-      // Setup same-tenant exercise
+      const aliceDb = testEnv.authenticatedContext('alice', { tenantId: 'tenant-a', role: 'User' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('exercises').doc('ex-a').set({
-          tenantId: 'tenant-a',
-          name: 'Exercise A',
-        });
+        await context.firestore().collection('exercises').doc('ex-1').set({ tenantId: 'tenant-a', name: 'Exercise A' });
       });
-
-      await assertSucceeds(aliceDb.collection('exercises').doc('ex-a').get());
+      await assertSucceeds(aliceDb.collection('exercises').doc('ex-1').get());
     });
   });
 
-  // 2. RBAC Tests (M5)
   describe('Role-Based Access Control', () => {
     it('should allow Admin to delete exercises', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const adminDb = testEnv.authenticatedContext('admin', { tenantId: 'tenant-a', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('exercises').doc('ex-a').set({
-          tenantId: 'tenant-a',
-          name: 'Exercise A',
-        });
+        await context.firestore().collection('exercises').doc('ex-1').set({ tenantId: 'tenant-a', name: 'Exercise A' });
       });
-
-      await assertSucceeds(adminDb.collection('exercises').doc('ex-a').delete());
+      await assertSucceeds(adminDb.collection('exercises').doc('ex-1').delete());
     });
 
     it('should prevent User from deleting exercises', async () => {
-      const userDb = testEnv.authenticatedContext('user-user', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
-
+      const userDb = testEnv.authenticatedContext('user', { tenantId: 'tenant-a', role: 'User' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('exercises').doc('ex-a').set({
-          tenantId: 'tenant-a',
-          name: 'Exercise A',
-        });
+        await context.firestore().collection('exercises').doc('ex-1').set({ tenantId: 'tenant-a', name: 'Exercise A' });
       });
-
-      await assertFails(userDb.collection('exercises').doc('ex-a').delete());
+      await assertFails(userDb.collection('exercises').doc('ex-1').delete());
     });
   });
 
-  // 3. Immutability Tests (M3)
   describe('Audit Log Immutability', () => {
     it('should prevent updating audit logs', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const adminDb = testEnv.authenticatedContext('admin', { tenantId: 'tenant-a', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('audit_logs').doc('log-1').set({
-          tenantId: 'tenant-a',
-          what: 'LOGIN',
-        });
+        await context.firestore().collection('audit_logs').doc('log-1').set({ tenantId: 'tenant-a', what: 'LOGIN' });
       });
-
-      await assertFails(adminDb.collection('audit_logs').doc('log-1').update({
-        what: 'MODIFIED',
-      }));
+      await assertFails(adminDb.collection('audit_logs').doc('log-1').update({ what: 'HACKED' }));
     });
   });
 
-  // 4. Communications Module Security (1.6)
   describe('Communications Module Security', () => {
     it('should allow Admin to read same-tenant mail', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const adminDb = testEnv.authenticatedContext('admin', { tenantId: 'tenant-a', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('mail').doc('mail-1').set({
-          tenantId: 'tenant-a',
-          to: 'user@example.com',
-        });
+        await context.firestore().collection('mail').doc('m-1').set({ tenantId: 'tenant-a', to: 'test@test.com' });
       });
-
-      await assertSucceeds(adminDb.collection('mail').doc('mail-1').get());
+      await assertSucceeds(adminDb.collection('mail').doc('m-1').get());
     });
 
     it('should prevent Admin from reading cross-tenant mail', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const bobDb = testEnv.authenticatedContext('bob', { tenantId: 'tenant-b', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('mail').doc('mail-b').set({
-          tenantId: 'tenant-b',
-          to: 'user-b@example.com',
-        });
+        await context.firestore().collection('mail').doc('m-1').set({ tenantId: 'tenant-a', to: 'test@test.com' });
       });
-
-      await assertFails(adminDb.collection('mail').doc('mail-b').get());
+      await assertFails(bobDb.collection('mail').doc('m-1').get());
     });
 
     it('should allow users to create mail for their own tenant', async () => {
-      const userDb = testEnv.authenticatedContext('user-user', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
-
-      await assertSucceeds(userDb.collection('mail').doc('mail-new').set({
-        tenantId: 'tenant-a',
-        to: 'new-user@example.com',
-      }));
+      const userDb = testEnv.authenticatedContext('user', { tenantId: 'tenant-a', role: 'User' }).firestore();
+      await assertSucceeds(userDb.collection('mail').add({ tenantId: 'tenant-a', to: 'test@test.com' }));
     });
 
     it('should prevent users from creating mail for other tenants', async () => {
-      const userDb = testEnv.authenticatedContext('user-user', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
-
-      await assertFails(userDb.collection('mail').doc('mail-other').set({
-        tenantId: 'tenant-b',
-        to: 'other-user@example.com',
-      }));
+      const userDb = testEnv.authenticatedContext('user', { tenantId: 'tenant-a', role: 'User' }).firestore();
+      await assertFails(userDb.collection('mail').add({ tenantId: 'tenant-b', to: 'test@test.com' }));
     });
 
     it('should allow read access to email templates for authenticated users', async () => {
-      const userDb = testEnv.authenticatedContext('user-user', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
-
+      const userDb = testEnv.authenticatedContext('user', { tenantId: 'tenant-a', role: 'User' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('email_templates').doc('task_ready').set({
-          subject: 'Task Ready',
-        });
+        await context.firestore().collection('email_templates').doc('t-1').set({ subject: 'Welcome' });
       });
-
-      await assertSucceeds(userDb.collection('email_templates').doc('task_ready').get());
+      await assertSucceeds(userDb.collection('email_templates').doc('t-1').get());
     });
   });
 
-  // 5. Asset Registry Security (2.1)
   describe('Asset Registry Security', () => {
     it('should allow Report role to read same-tenant assets', async () => {
-      const reportDb = testEnv.authenticatedContext('report-user', {
-        tenantId: 'tenant-a',
-        role: 'Report',
-      }).firestore();
-
+      const reportDb = testEnv.authenticatedContext('reporter', { tenantId: 'tenant-a', role: 'Report' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('assets').doc('asset-1').set({
-          tenantId: 'tenant-a',
-          name: 'Core Database',
-        });
+        await context.firestore().collection('assets').doc('asset-1').set({ tenantId: 'tenant-a', name: 'Server' });
       });
-
       await assertSucceeds(reportDb.collection('assets').doc('asset-1').get());
     });
 
     it('should prevent cross-tenant asset access', async () => {
-      const aliceDb = testEnv.authenticatedContext('alice', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const bobDb = testEnv.authenticatedContext('bob', { tenantId: 'tenant-b', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('assets').doc('asset-b').set({
-          tenantId: 'tenant-b',
-          name: 'Tenant B System',
-        });
+        await context.firestore().collection('assets').doc('asset-1').set({ tenantId: 'tenant-a', name: 'Server' });
       });
-
-      await assertFails(aliceDb.collection('assets').doc('asset-b').get());
+      await assertFails(bobDb.collection('assets').doc('asset-1').get());
     });
 
     it('should allow Moderator to create assets for their tenant', async () => {
-      const modDb = testEnv.authenticatedContext('mod-user', {
-        tenantId: 'tenant-a',
-        role: 'Moderator',
-      }).firestore();
-
-      await assertSucceeds(modDb.collection('assets').doc('new-asset').set({
-        tenantId: 'tenant-a',
-        name: 'Web Server',
-      }));
+      const modDb = testEnv.authenticatedContext('mod', { tenantId: 'tenant-a', role: 'Moderator' }).firestore();
+      await assertSucceeds(modDb.collection('assets').add({ tenantId: 'tenant-a', name: 'New DB' }));
     });
 
     it('should prevent User role from creating assets', async () => {
-      const userDb = testEnv.authenticatedContext('user-user', {
-        tenantId: 'tenant-a',
-        role: 'User',
-      }).firestore();
-
-      await assertFails(userDb.collection('assets').doc('illegal-asset').set({
-        tenantId: 'tenant-a',
-        name: 'Illegal Asset',
-      }));
+      const userDb = testEnv.authenticatedContext('user', { tenantId: 'tenant-a', role: 'User' }).firestore();
+      await assertFails(userDb.collection('assets').add({ tenantId: 'tenant-a', name: 'Bad Asset' }));
     });
   });
 
-  // 6. Webhook Engine Security (3.3)
   describe('Webhook Engine Security', () => {
     it('should allow Admin to read same-tenant webhook configs', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const adminDb = testEnv.authenticatedContext('admin', { tenantId: 'tenant-a', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('webhook_configs').doc('config-1').set({
-          tenantId: 'tenant-a',
-          type: 'inbound',
-          active: true,
-        });
+        await context.firestore().collection('webhook_configs').doc('web-1').set({ tenantId: 'tenant-a', url: 'https://test.com' });
       });
-
-      await assertSucceeds(adminDb.collection('webhook_configs').doc('config-1').get());
+      await assertSucceeds(adminDb.collection('webhook_configs').doc('web-1').get());
     });
 
     it('should prevent cross-tenant webhook config access', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
+      const bobDb = testEnv.authenticatedContext('bob', { tenantId: 'tenant-b', role: 'Admin' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('webhook_configs').doc('config-b').set({
-          tenantId: 'tenant-b',
-          type: 'inbound',
-          active: true,
-        });
+        await context.firestore().collection('webhook_configs').doc('web-1').set({ tenantId: 'tenant-a', url: 'https://test.com' });
       });
-
-      await assertFails(adminDb.collection('webhook_configs').doc('config-b').get());
+      await assertFails(bobDb.collection('webhook_configs').doc('web-1').get());
     });
 
     it('should prevent non-Admin from reading webhook configs', async () => {
-      const modDb = testEnv.authenticatedContext('mod-user', {
-        tenantId: 'tenant-a',
-        role: 'Moderator',
-      }).firestore();
-
+      const modDb = testEnv.authenticatedContext('mod', { tenantId: 'tenant-a', role: 'Moderator' }).firestore();
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('webhook_configs').doc('config-1').set({
-          tenantId: 'tenant-a',
-          type: 'inbound',
-          active: true,
-        });
+        await context.firestore().collection('webhook_configs').doc('web-1').set({ tenantId: 'tenant-a', url: 'https://test.com' });
       });
-
-      await assertFails(modDb.collection('webhook_configs').doc('config-1').get());
+      await assertFails(modDb.collection('webhook_configs').doc('web-1').get());
     });
 
     it('should allow Admin to create webhook configs for their tenant', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
-      await assertSucceeds(adminDb.collection('webhook_configs').doc('new-config').set({
-        tenantId: 'tenant-a',
-        type: 'inbound',
-        active: true,
-        secret: 'shhh',
-      }));
+      const adminDb = testEnv.authenticatedContext('admin', { tenantId: 'tenant-a', role: 'Admin' }).firestore();
+      await assertSucceeds(adminDb.collection('webhook_configs').add({ tenantId: 'tenant-a', type: 'outbound' }));
     });
 
     it('should prevent Admin from creating webhook configs for other tenants', async () => {
-      const adminDb = testEnv.authenticatedContext('admin-user', {
-        tenantId: 'tenant-a',
-        role: 'Admin',
-      }).firestore();
-
-      await assertFails(adminDb.collection('webhook_configs').doc('bad-config').set({
-        tenantId: 'tenant-b',
-        type: 'inbound',
-        active: true,
-        secret: 'shhh',
-      }));
+      const adminDb = testEnv.authenticatedContext('admin', { tenantId: 'tenant-a', role: 'Admin' }).firestore();
+      await assertFails(adminDb.collection('webhook_configs').add({ tenantId: 'tenant-b', type: 'outbound' }));
     });
   });
 });
