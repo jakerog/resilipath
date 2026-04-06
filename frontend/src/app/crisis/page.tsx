@@ -27,7 +27,9 @@ export default function CrisisCommand() {
     ];
   }, [tenantId]);
 
-  const { data: auditLogs } = useFirestoreQuery('audit_logs', logConstraints);
+  const { data: auditLogs } = useFirestoreQuery('audit_logs', logConstraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   // 2. Aggregate Acknowledgment Stats (M10/Task 5)
   // In a real system, we'd query /mail, /sms, /voice for acknowledgedAt
@@ -40,7 +42,9 @@ export default function CrisisCommand() {
     return [where('tenantId', '==', tenantId), where('active', '==', true)];
   }, [tenantId]);
 
-  const { data: contacts } = useFirestoreQuery('crisis_contacts', contactConstraints);
+  const { data: contacts } = useFirestoreQuery('crisis_contacts', contactConstraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   const handleTrigger = async () => {
     if (!message || isTriggering) return;

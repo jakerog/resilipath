@@ -30,7 +30,9 @@ export default function ExerciseGallery() {
     ];
   }, [tenantId]);
 
-  const { data: exercises, loading: exercisesLoading } = useFirestoreQuery('exercises', exerciseConstraints);
+  const { data: exercises, loading: exercisesLoading } = useFirestoreQuery('exercises', exerciseConstraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   const loading = authLoading || exercisesLoading;
 

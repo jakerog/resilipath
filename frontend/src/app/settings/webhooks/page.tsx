@@ -42,11 +42,13 @@ export default function WebhookSettings() {
 
   // 1. Fetch Webhook Configs
   const webhookConstraints = useMemo(() => {
-    if (!tenantId) return [];
+    if (!tenantId || tenantId === 'pending') return [];
     return [where('tenantId', '==', tenantId)];
   }, [tenantId]);
 
-  const { data: webhooks, loading } = useFirestoreQuery('webhook_configs', webhookConstraints);
+  const { data: webhooks, loading } = useFirestoreQuery('webhook_configs', webhookConstraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   const handleCreate = async () => {
     if (!tenantId || (newWebhook.type === 'outbound' && !newWebhook.url)) return;

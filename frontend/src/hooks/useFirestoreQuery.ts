@@ -12,13 +12,18 @@ import { db } from '@/lib/firebase';
 export function useFirestoreQuery<T = DocumentData>(
   collectionName: string,
   constraints: QueryConstraint[] = [],
-  options: { realtime?: boolean } = { realtime: true }
+  options: { realtime?: boolean; enabled?: boolean } = { realtime: true, enabled: true }
 ) {
   const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(options.enabled !== false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (options.enabled === false) {
+      setLoading(false);
+      return;
+    }
+
     let q;
     try {
       q = query(collection(db, collectionName), ...constraints);
@@ -27,6 +32,8 @@ export function useFirestoreQuery<T = DocumentData>(
       setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     // Real-time listener (Default)
     if (options.realtime !== false) {
@@ -68,7 +75,7 @@ export function useFirestoreQuery<T = DocumentData>(
     };
 
     fetchData();
-  }, [collectionName, constraints.length, options.realtime]);
+  }, [collectionName, constraints.length, options.realtime, options.enabled]);
 
   return { data, loading, error };
 }

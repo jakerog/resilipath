@@ -21,7 +21,9 @@ export default function AssetRegistry() {
     ];
   }, [tenantId]);
 
-  const { data: assets, loading: queryLoading } = useFirestoreQuery('assets', constraints);
+  const { data: assets, loading: queryLoading } = useFirestoreQuery('assets', constraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   const handleMarkReviewed = async (assetId: string) => {
     try {

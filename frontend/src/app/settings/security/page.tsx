@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
-import { where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useMemo, useEffect, useState } from 'react';
+import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
@@ -11,20 +10,47 @@ import { clsx } from 'clsx';
 
 export default function EnterpriseSecurity() {
   const { tenantId, user } = useAuth();
-  const [isSaving, setIsSaving] = React.useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [tenant, setTenant] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<any>(null);
 
-  // 1. Fetch Tenant Config
-  const tenantConstraints = useMemo(() => {
-    if (!tenantId) return [];
-    return [where('tenantId', '==', tenantId)];
+  // 1. Fetch Tenant Config via direct doc reference (more reliable for permissions)
+  useEffect(() => {
+    async function fetchTenant() {
+      if (!tenantId || tenantId === 'pending') {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const docRef = doc(db, 'tenants', tenantId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setTenant({ id: docSnap.id, ...data });
+          setFormData(data.authConfig || {
+            providerType: 'password',
+            enforceSso: false,
+            domainWhitelist: [],
+            attributeMapping: { roleField: 'groups', adminRoleValue: 'resili-admin' }
+          });
+        } else {
+          setError('Tenant record not found.');
+        }
+      } catch (err: any) {
+        console.error('Error fetching tenant:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTenant();
   }, [tenantId]);
 
-  const { data: tenants, loading } = useFirestoreQuery('tenants', tenantConstraints);
-  const tenant = tenants[0] as any;
-
-  const [formData, setFormData] = React.useState<any>(null);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (tenant && !formData) {
       setFormData(tenant.authConfig || {
         providerType: 'password',
@@ -52,7 +78,42 @@ export default function EnterpriseSecurity() {
     }
   };
 
-  if (loading || !formData) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6]">
+        <div className="flex flex-col items-center gap-4 animate-pulse text-brand-secondary">
+          <Shield className="w-10 h-10" />
+          <p className="text-xs font-bold uppercase tracking-widest">Identifying Infrastructure...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !tenant || tenantId === 'pending') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6]">
+        <SkeuomorphicContainer className="text-center p-12 max-w-md space-y-6">
+          <div className="mx-auto w-16 h-16 neumorphic-inset rounded-full flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-brand-danger" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-brand-primary">Security Access Restricted</h2>
+            <p className="text-xs text-brand-secondary opacity-60 leading-relaxed">
+              Your account is currently in a 'Pending' state or lacks the necessary administrative privileges to manage enterprise security settings.
+            </p>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="neumorphic-button px-8 py-3 text-[10px] font-bold text-brand-accent uppercase tracking-widest"
+          >
+            Refresh Authorization
+          </button>
+        </SkeuomorphicContainer>
+      </div>
+    );
+  }
+
+  if (!formData) return null;
 
   return (
     <div className="min-h-screen bg-[#f4f7f6] p-4 md:p-8">

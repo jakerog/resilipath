@@ -25,13 +25,22 @@ export default function LoginPage() {
       try {
         const discoverFunc = httpsCallable(functions, 'discoverIdentityProvider');
         const result = await discoverFunc({ email: val }) as any;
-        setIdpConfig(result.data);
+
+        // Ensure result data exists and handle null config
+        if (result.data) {
+          setIdpConfig(result.data);
+        } else {
+          setIdpConfig({ providerType: 'password', enforceSso: false });
+        }
       } catch (err: any) {
         console.error('Discovery failed:', err);
-        // Fallback for common 'internal' or 'missing-function' errors during dev
-        if (err.code === 'internal' || err.code === 'not-found') {
-          console.warn("⚠️  IdP Discovery Function not reached. Defaulting to password login.");
+        // Fallback for common 'internal', 'unavailable' or 'not-found' errors during dev/startup
+        const isConnectionError = ['internal', 'not-found', 'unavailable', 'deadline-exceeded'].includes(err.code);
+        if (isConnectionError) {
+          console.warn(`⚠️  IdP Discovery unavailable (code: ${err.code}). Defaulting to password login.`);
           setIdpConfig({ providerType: 'password', enforceSso: false });
+        } else {
+          setError(`Identity check failed: ${err.message}`);
         }
       } finally {
         setDiscovering(false);

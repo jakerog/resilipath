@@ -21,7 +21,9 @@ export default function ComplianceDashboard() {
   const { tenantId } = useAuth();
 
   // 1. Fetch Compliance Controls
-  const { data: controls, loading } = useFirestoreQuery('compliance_controls');
+  const { data: controls, loading } = useFirestoreQuery('compliance_controls', [], {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   const frameworks = [
     { id: 'SOC2', name: 'SOC 2 Type II', color: 'text-brand-accent' },

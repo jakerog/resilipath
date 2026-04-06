@@ -26,7 +26,9 @@ export default function IntelligenceDashboard() {
     return [where('tenantId', '==', tenantId), orderBy('calculatedAt', 'desc'), limit(1)];
   }, [tenantId]);
 
-  const { data: scores, loading } = useFirestoreQuery('resilience_scores', scoreConstraints);
+  const { data: scores, loading } = useFirestoreQuery('resilience_scores', scoreConstraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
   const latestScore = scores[0] as any;
 
   if (loading) return null;

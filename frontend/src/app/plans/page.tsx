@@ -15,18 +15,23 @@ export default function PlanGallery() {
   const { tenantId, user, loading: authLoading } = useAuth();
 
   // 1. Fetch available templates (global) - Optimized non-realtime
-  const { data: templates, loading: templatesLoading } = useFirestoreQuery('bcp_templates', [], { realtime: false });
+  const { data: templates, loading: templatesLoading } = useFirestoreQuery('bcp_templates', [], {
+    realtime: false,
+    enabled: !!user
+  });
 
   // 2. Fetch tenant plans
   const planConstraints = useMemo(() => {
-    if (!tenantId) return [];
+    if (!tenantId || tenantId === 'pending') return [];
     return [
       where('tenantId', '==', tenantId),
       orderBy('updatedAt', 'desc')
     ];
   }, [tenantId]);
 
-  const { data: plans, loading: plansLoading } = useFirestoreQuery('plans', planConstraints);
+  const { data: plans, loading: plansLoading } = useFirestoreQuery('plans', planConstraints, {
+    enabled: !!tenantId && tenantId !== 'pending'
+  });
 
   const [isCreating, setIsCreating] = React.useState(false);
 
