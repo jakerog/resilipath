@@ -89,17 +89,17 @@ export default function EnterpriseSecurity() {
     );
   }
 
-  if (error || !tenant || tenantId === 'pending') {
+  if (error || (tenantId !== 'pending' && !tenant) || tenantId === 'pending') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6]">
         <SkeuomorphicContainer className="text-center p-12 max-w-md space-y-6">
-          <div className="mx-auto w-16 h-16 neumorphic-inset rounded-full flex items-center justify-center">
-            <AlertCircle className="w-8 h-8 text-brand-danger" />
+          <div className="mx-auto w-16 h-16 neumorphic-inset rounded-full flex items-center justify-center text-brand-warning">
+            <Shield className="w-8 h-8" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-bold text-brand-primary">Security Access Restricted</h2>
+            <h2 className="text-lg font-bold text-brand-primary uppercase tracking-tight">Provisioning Required</h2>
             <p className="text-xs text-brand-secondary opacity-60 leading-relaxed">
-              Your account is currently in a 'Pending' state or lacks the necessary administrative privileges to manage enterprise security settings.
+              To manage enterprise security settings, your account must first be provisioned and assigned to a verified tenant.
             </p>
           </div>
           <button

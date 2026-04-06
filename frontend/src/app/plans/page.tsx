@@ -15,9 +15,9 @@ export default function PlanGallery() {
   const { tenantId, user, loading: authLoading } = useAuth();
 
   // 1. Fetch available templates (global) - Optimized non-realtime
-  const { data: templates, loading: templatesLoading } = useFirestoreQuery('bcp_templates', [], {
+  const { data: templates, loading: templatesLoading, error: templatesError } = useFirestoreQuery('bcp_templates', [], {
     realtime: false,
-    enabled: !!user
+    enabled: !!user // Templates are global, only need authentication
   });
 
   // 2. Fetch tenant plans
@@ -91,6 +91,40 @@ export default function PlanGallery() {
       <main className="max-w-7xl mx-auto space-y-12">
         <ReviewSummary plans={plans} />
 
+        {plans.length === 0 && !plansLoading && tenantId !== 'pending' && (
+          <SkeuomorphicContainer inset className="p-12 text-center space-y-6">
+            <div className="mx-auto w-16 h-16 neumorphic-button rounded-full flex items-center justify-center text-brand-accent">
+              <Plus className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold text-brand-primary">Create Your First Resilience Plan</h2>
+              <p className="text-sm text-brand-secondary opacity-60 max-w-md mx-auto">
+                Select a standardized BCP template below to begin drafting your organization's resilience strategy.
+              </p>
+            </div>
+            <button
+              onClick={() => document.getElementById('templates-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-xs font-black text-brand-accent uppercase tracking-widest hover:underline"
+            >
+              Browse Templates Below
+            </button>
+          </SkeuomorphicContainer>
+        )}
+
+        {tenantId === 'pending' && (
+          <div className="bg-brand-warning/10 border border-brand-warning/20 p-6 rounded-3xl flex gap-6 items-center animate-in slide-in-from-top-4 duration-500">
+            <div className="p-4 neumorphic-inset rounded-2xl">
+               <Shield className="w-8 h-8 text-brand-warning" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">Provisioning Required</h3>
+              <p className="text-xs text-brand-secondary opacity-70 leading-relaxed max-w-2xl">
+                Your workspace is currently initializing. To access standardized BCP templates and create resilience plans, ensure your account has been provisioned with the <code className="bg-white/50 px-1.5 rounded text-brand-accent">provision-tenant</code> script.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Active Plans Section */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
@@ -141,13 +175,25 @@ export default function PlanGallery() {
         </section>
 
         {/* Template Gallery Section */}
-        <section className="space-y-6">
-           <h2 className="text-sm font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2">
-            <Shield className="w-4 h-4 text-brand-success" />
-            Standardized BCP Templates
-          </h2>
+        <section id="templates-section" className="space-y-6">
+           <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2">
+              <Shield className="w-4 h-4 text-brand-success" />
+              Standardized BCP Templates
+            </h2>
+            {templatesError && (
+              <span className="text-[10px] font-bold text-brand-danger uppercase tracking-tight bg-brand-danger/5 px-2 py-1 rounded">
+                Template fetch limited by permissions
+              </span>
+            )}
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.length === 0 && !templatesLoading && (
+              <div className="col-span-full py-12 text-center border-2 border-dashed border-brand-secondary/10 rounded-3xl opacity-30 italic font-medium">
+                {templatesError ? "Unable to load templates. Ensure you are provisioned." : "No templates available in the library."}
+              </div>
+            )}
             {templates.map((template: any) => (
               <SkeuomorphicContainer key={template.id} className="flex flex-col h-full">
                 <div className="flex-1 space-y-3">

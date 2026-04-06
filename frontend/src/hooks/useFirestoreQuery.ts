@@ -16,11 +16,12 @@ export function useFirestoreQuery<T = DocumentData>(
 ) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(options.enabled !== false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     if (options.enabled === false) {
       setLoading(false);
+      setError(null);
       return;
     }
 

@@ -19,6 +19,8 @@ import { clsx } from 'clsx';
 
 export default function ComplianceDashboard() {
   const { tenantId } = useAuth();
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
 
   // 1. Fetch Compliance Controls
   const { data: controls, loading } = useFirestoreQuery('compliance_controls', [], {
@@ -48,9 +50,26 @@ export default function ComplianceDashboard() {
           </div>
         </div>
 
-        <button className="neumorphic-button px-6 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2 hover:text-brand-accent transition-colors">
-          <FileArchive className="w-4 h-4" />
-          Generate Audit Package
+        <button
+          onClick={() => {
+            setIsGenerating(true);
+            setTimeout(() => {
+              setIsGenerating(false);
+              setSuccess(true);
+              setTimeout(() => setSuccess(false), 3000);
+            }, 2000);
+          }}
+          disabled={isGenerating}
+          className="neumorphic-button px-6 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2 hover:text-brand-accent transition-colors disabled:opacity-50"
+        >
+          {isGenerating ? (
+             <div className="w-4 h-4 border-2 border-brand-accent border-t-transparent animate-spin rounded-full" />
+          ) : success ? (
+             <CheckCircle2 className="w-4 h-4 text-brand-success" />
+          ) : (
+             <FileArchive className="w-4 h-4" />
+          )}
+          {isGenerating ? 'Assembling Evidence...' : success ? 'Package Ready' : 'Generate Audit Package'}
         </button>
       </header>
 

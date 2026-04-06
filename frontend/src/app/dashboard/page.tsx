@@ -74,15 +74,22 @@ export default function ExerciseGallery() {
 
       <main className="max-w-5xl mx-auto space-y-6">
         {tenantId === 'pending' && (
-          <div className="bg-brand-warning/10 border border-brand-warning/20 p-4 rounded-2xl flex gap-3 mb-6 animate-in slide-in-from-top-2">
-            <AlertTriangle className="w-5 h-5 text-brand-warning shrink-0" />
-            <div className="space-y-1">
-              <p className="text-xs text-brand-primary font-bold">Account Pending Provisioning</p>
-              <p className="text-[10px] text-brand-secondary leading-relaxed">
-                Your account is not yet mapped to a tenant. Please run the <code className="bg-white/50 px-1 rounded text-brand-accent">provision-tenant</code> script
-                or contact your administrator to gain full platform access.
+          <div className="bg-brand-warning/10 border border-brand-warning/20 p-6 rounded-3xl flex gap-6 items-center mb-10 animate-in slide-in-from-top-4 duration-500">
+            <div className="p-4 neumorphic-inset rounded-2xl">
+               <Shield className="w-8 h-8 text-brand-warning" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">Provisioning Required</h3>
+              <p className="text-xs text-brand-secondary opacity-70 leading-relaxed max-w-2xl">
+                Your account is currently in a 'Pending' state. To access resilience exercises and manage your tenant infrastructure, ensure your account has been provisioned with the <code className="bg-white/50 px-1.5 rounded text-brand-accent">provision-tenant</code> script.
               </p>
             </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="neumorphic-button px-6 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest whitespace-nowrap"
+            >
+              Refresh Authorization
+            </button>
           </div>
         )}
 

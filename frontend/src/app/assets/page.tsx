@@ -6,12 +6,22 @@ import { orderBy, where, doc, updateDoc, serverTimestamp } from 'firebase/firest
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase';
 import { SkeuomorphicContainer } from '@/components/layout/SkeuomorphicContainer';
-import { Database, ShieldCheck, Tag, User, Clock, CheckCircle2, MapPin, X, Save } from 'lucide-react';
+import { Database, ShieldCheck, Tag, User, Clock, CheckCircle2, MapPin, X, Save, Plus } from 'lucide-react';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default function AssetRegistry() {
-  const { tenantId, loading: authLoading } = useAuth();
+  const { tenantId, user, loading: authLoading } = useAuth();
+  const [isAdding, setIsAdding] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
   const [editingAsset, setEditingAsset] = React.useState<any>(null);
   const [locationForm, setLocationForm] = React.useState({ lat: 0, lng: 0 });
+  const [newAsset, setNewAsset] = React.useState({
+    name: '',
+    type: 'system',
+    criticality: 'medium',
+    bia: { rto: 240, rpo: 60 },
+    location: { lat: 0, lng: 0 }
+  });
 
   const constraints = useMemo(() => {
     if (!tenantId) return [];
@@ -65,8 +75,11 @@ export default function AssetRegistry() {
             </p>
           </div>
         </div>
-        <button className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-primary uppercase tracking-wider">
-          Add New Asset
+        <button
+          onClick={() => setIsAdding(true)}
+          className="neumorphic-button px-6 py-2 text-xs font-bold text-brand-accent uppercase tracking-widest flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" /> Add New Asset
         </button>
       </header>
 
@@ -164,6 +177,141 @@ export default function AssetRegistry() {
           </div>
         </SkeuomorphicContainer>
       </main>
+
+      {/* Add New Asset Modal */}
+      {isAdding && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in zoom-in-95 duration-200">
+          <SkeuomorphicContainer className="w-full max-w-lg p-8 space-y-6 relative">
+            <button
+              onClick={() => setIsAdding(false)}
+              className="absolute top-6 right-6 text-brand-secondary hover:text-brand-primary"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold text-brand-primary">Register New Asset</h2>
+              <p className="text-[10px] text-brand-secondary uppercase tracking-widest font-bold opacity-60">
+                Asset Registry Entry
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase text-brand-secondary tracking-widest">Asset Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newAsset.name}
+                    onChange={(e) => setNewAsset({ ...newAsset, name: e.target.value })}
+                    className="neumorphic-inset w-full bg-transparent p-4 rounded-xl text-sm text-brand-primary focus:outline-none"
+                    placeholder="e.g. Primary DB Cluster"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase text-brand-secondary tracking-widest">Type</label>
+                  <select
+                    value={newAsset.type}
+                    onChange={(e) => setNewAsset({ ...newAsset, type: e.target.value })}
+                    className="neumorphic-inset w-full bg-transparent p-4 rounded-xl text-sm text-brand-primary focus:outline-none appearance-none"
+                  >
+                    <option value="system">System</option>
+                    <option value="service">Service</option>
+                    <option value="infrastructure">Infrastructure</option>
+                    <option value="personnel">Personnel</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase text-brand-secondary tracking-widest">Criticality</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['low', 'medium', 'high', 'critical'].slice(1).map((level) => (
+                      <button
+                        key={level}
+                        onClick={() => setNewAsset({ ...newAsset, criticality: level as any })}
+                        className={clsx(
+                          "p-2 rounded-lg text-[9px] font-bold uppercase tracking-tighter transition-all",
+                          newAsset.criticality === level
+                            ? "neumorphic-inset text-brand-accent bg-brand-accent/5"
+                            : "neumorphic-button text-brand-secondary"
+                        )}
+                      >
+                        {level}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-brand-secondary tracking-widest">RTO (min)</label>
+                    <input
+                      type="number"
+                      value={newAsset.bia.rto}
+                      onChange={(e) => setNewAsset({ ...newAsset, bia: { ...newAsset.bia, rto: parseInt(e.target.value) }})}
+                      className="neumorphic-inset w-full bg-transparent p-4 rounded-xl text-sm text-brand-primary focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-brand-secondary tracking-widest">RPO (min)</label>
+                    <input
+                      type="number"
+                      value={newAsset.bia.rpo}
+                      onChange={(e) => setNewAsset({ ...newAsset, bia: { ...newAsset.bia, rpo: parseInt(e.target.value) }})}
+                      className="neumorphic-inset w-full bg-transparent p-4 rounded-xl text-sm text-brand-primary focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 flex justify-end gap-4">
+               <button
+                onClick={() => setIsAdding(false)}
+                className="px-6 py-3 text-[10px] font-bold text-brand-secondary uppercase tracking-widest"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={!newAsset.name || isSaving}
+                onClick={async () => {
+                  setIsSaving(true);
+                  try {
+                    await addDoc(collection(db, 'assets'), {
+                      ...newAsset,
+                      tenantId,
+                      ownerUid: user?.uid,
+                      lastReviewedAt: serverTimestamp(),
+                      updatedAt: serverTimestamp(),
+                      status: 'active'
+                    });
+                    setIsAdding(false);
+                    setNewAsset({
+                      name: '',
+                      type: 'system',
+                      criticality: 'medium',
+                      bia: { rto: 240, rpo: 60 },
+                      location: { lat: 0, lng: 0 }
+                    });
+                  } catch (err) {
+                    console.error('Failed to add asset:', err);
+                  } finally {
+                    setIsSaving(false);
+                  }
+                }}
+                className="neumorphic-button px-10 py-3 text-[10px] font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2"
+              >
+                {isSaving ? <div className="w-3 h-3 border-2 border-brand-accent border-t-transparent animate-spin rounded-full" /> : <Save className="w-3 h-3 text-brand-accent" />}
+                Add Asset
+              </button>
+            </div>
+          </SkeuomorphicContainer>
+        </div>
+      )}
 
       {/* Location Edit Modal */}
       {editingAsset && (
