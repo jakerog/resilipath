@@ -18,10 +18,10 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 | Milestone | Date | Deliverable |
 |-----------|------|-------------|
 | Phase 0 Complete | 2026-03-28 | Foundation architecture ready (GCP, Firebase Auth, CI/CD, Firestore schema) |
-| Phase 1 MVP Launch | 2026-04-01 | [Resilience Exercise Execution Engine](phases/phase-1/summary.md) (Modular GCP/Firebase architecture, Vercel frontend) |
-| Phase 2 Alpha | 2026-05-27 | BCP Plan Generation + Multi-format exports + Offline mode (PWA Service Workers) |
-| Phase 3 Hardening | 2026-07-22 | Crisis Communications (Multi-channel) + Performance optimization + SSO/SAML |
-| Phase 4 Scale | 2026-10-01 | Vendor Risk + Compliance Mapper + ML analytics + Partner API |
+| Phase 1 MVP Launch | 2026-04-01 | [Resilience Exercise Execution Engine](phases/phase-1/summary.md) - **100% COMPLETE** |
+| Phase 2 Alpha | 2026-05-27 | [Resilience Planning & Lifecycle](phases/phase-2/summary.md) - **100% COMPLETE** |
+| Phase 3 Complete | 2026-07-22 | [Crisis Comms & Hardening](phases/phase-3/summary.md) - **100% COMPLETE** |
+| Phase 4 Complete | 2026-10-01 | [Scale & Intelligence](phases/phase-4/summary.md) - **100% COMPLETE** |
 
 ---
 
@@ -34,6 +34,16 @@ This roadmap outlines the phased delivery of the ResiliPath with a **single-modu
 | **Phase 2** | Weeks 9-16 | 8 weeks | Module 2 Alpha | BCP plan generation, Excel/Word exports, Offline mode (IndexedDB + Service Workers) | BCP Gen <2hrs, Template Accuracy >95%, Offline Sync Success >99% |
 | **Phase 3** | Weeks 17-24 | 8 weeks | Hardening | Crisis communications, performance optimization, advanced third-party integrations | Notification Delivery >99%, Page Load <2s (p95), API <300ms |
 | **Phase 4** | Weeks 25-36 | 12 weeks | Scale | Vendor risk, compliance mapper, ML analytics, partner API, internationalization | 100+ Tenants, $1M+ ARR, NPS >50 |
+
+---
+
+## Phase 4: Strategic Scale & Intelligence (Weeks 25-36)
+
+### Objectives
+- [x] **[Sub-Phase 4.1: Vendor Risk Management](phases/phase-4/4.1-vendor-risk.md)** (Automated assessments)
+- [x] **[Sub-Phase 4.2: ML Resilience Scoring](phases/phase-4/4.2-ml-analytics.md)** (Predictive analytics)
+- [x] **[Sub-Phase 4.3: Compliance Automation](phases/phase-4/4.3-compliance.md)** (Control mapping)
+- [x] **[Sub-Phase 4.4: Partner API](phases/phase-4/4.4-partner-api.md)** (External integration Spoke)
 
 ---
 

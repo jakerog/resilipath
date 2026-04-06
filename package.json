@@ -1,0 +1,22 @@
+{
+  "name": "resilipath",
+  "version": "1.0.0",
+  "description": "ResiliPath - Modular Resilience SaaS",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "provision-tenant": "ts-node scripts/provision-tenant.ts",
+    "seed-templates": "ts-node scripts/seed-templates.ts",
+    "deploy-rules": "firebase deploy --only firestore:rules,storage:rules",
+    "deploy-indexes": "firebase deploy --only firestore:indexes"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.31.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

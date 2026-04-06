@@ -24,6 +24,7 @@ The documentation suite is organized for modularity and compliance (SOC 2 / ISO 
 - [ROADMAP.md](docs/roadmap.md): 5-phase delivery plan with a single-module MVP focus.
 - [Architecture Decision Records (ADRs)](docs/adrs/): Justification for critical technical decisions.
 - [Verification Instructions](docs/instructions.md): Guide for non-developers to verify the refactor.
+- [User Verification Guide](docs/user-verification.md): Installation and functional testing guide for stakeholders.
 
 ### Phase 1: Resilience Exercise Execution Engine
 The Phase 1 roadmap is deconstructed into 9 discrete, domain-specific modular sub-phases:
